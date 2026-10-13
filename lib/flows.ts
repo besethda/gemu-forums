@@ -127,31 +127,10 @@ export const flows = {
   },
   creator: {
     title: "Share or sell your work",
-    intro: "Introduce a model, environment or tool for a future catalogue.",
-    fields: [
-      ...person,
-      { name: "title", label: "Asset name", required: true },
-      {
-        name: "category",
-        label: "Category",
-        type: "select",
-        required: true,
-        options: ["Models", "Environments", "Tools"],
-      },
-      {
-        name: "summary",
-        label: "Describe the asset",
-        type: "textarea",
-        required: true,
-      },
-      { name: "link", label: "Portfolio or file link (optional)", type: "url" },
-      {
-        name: "license",
-        label: "Ownership and proposed license",
-        type: "textarea",
-        required: true,
-      },
-    ],
+    intro:
+      "Introduce a model, environment or tool. The Gemu team reviews every submission before it's listed.",
+    // Rendered by components/asset-submission-form.tsx, not these placeholder fields.
+    fields: [],
   },
   question: {
     title: "Ask a question",

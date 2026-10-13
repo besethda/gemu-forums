@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { AssetSubmissionForm } from "@/components/asset-submission-form";
 import {
   flows,
   infoContent,
@@ -194,6 +195,8 @@ function PreviewDialog({
   const dialog = useRef<HTMLDialogElement>(null);
   const config: Flow | null =
     request.kind === "form" ? flows[request.key] : null;
+  // The creator flow has a working form; the others are still placeholders.
+  const assetForm = request.kind === "form" && request.key === "creator";
   const info = request.kind === "info" ? infoContent[request.key] : null;
   useEffect(() => {
     const element = dialog.current!;
@@ -253,7 +256,11 @@ function PreviewDialog({
         ×
       </button>
       <p className="eyebrow">
-        {config ? "Form placeholder" : "Preview information"}
+        {assetForm
+          ? "Share your work"
+          : config
+            ? "Form placeholder"
+            : "Preview information"}
       </p>
       <h2 id="dialog-title">{config?.title ?? info?.title}</h2>
       <p id="dialog-intro">{config?.intro ?? info?.copy}</p>
@@ -262,7 +269,8 @@ function PreviewDialog({
           <strong>Selected asset:</strong> {request.subject}
         </p>
       )}
-      {config && (
+      {assetForm && <AssetSubmissionForm onDone={close} />}
+      {config && !assetForm && (
         <>
           <p className="disclosure">
             This form is a visual placeholder. Fields and submission are
@@ -327,9 +335,11 @@ function PreviewDialog({
             )}
         </>
       )}
-      <button className="button placeholder-done" onClick={close}>
-        Done
-      </button>
+      {!assetForm && (
+        <button className="button placeholder-done" onClick={close}>
+          Done
+        </button>
+      )}
     </dialog>
   );
 }
