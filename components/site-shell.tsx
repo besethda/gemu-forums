@@ -14,6 +14,7 @@ import {
 
 import AccessForm from "@/components/access/AccessForm";
 import FlowForm from "@/components/flow/FlowForm";
+import Newsletter from "@/components/newsletter/Newsletter";
 
 type ModalRequest =
   | { kind: "form"; key: FlowKey }
@@ -203,6 +204,7 @@ function PreviewDialog({
     request.kind === "form" && (request.key   === "engine" || request.key === "publishing")
       ? request.key
       : null;
+  const isNewsletter = request.kind === "info" && request.key === "updates";
   useEffect(() => {
     const element = dialog.current!;
     element.showModal();
@@ -261,7 +263,7 @@ function PreviewDialog({
         ×
       </button>
       <p className="eyebrow">
-                {applicationPath ? "Application" : config ? "Form" : "Preview information"}
+        {applicationPath ? "Application" : config ? "Form" : isNewsletter ? "Newsletter" : "Preview information"}            
       </p>
       <h2 id="dialog-title">{config?.title ?? info?.title}</h2>
       <p id="dialog-intro">{config?.intro ?? info?.copy}</p>
@@ -275,7 +277,8 @@ function PreviewDialog({
       {request.kind === "form" && !applicationPath && request.key !== "creator" && (
         <FlowForm flowKey={request.key} />
       )}
-      {!config && (
+      {isNewsletter && <Newsletter />}
+      {!config && !isNewsletter && (
         <button className="button placeholder-done" onClick={close}>
           Done
         </button>
