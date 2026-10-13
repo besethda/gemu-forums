@@ -12,6 +12,8 @@ import {
   type InfoKey,
 } from "@/lib/flows";
 
+import AccessForm from "@/components/access/AccessForm";
+
 type ModalRequest =
   | { kind: "form"; key: FlowKey }
   | { kind: "info"; key: InfoKey; subject?: string };
@@ -194,7 +196,12 @@ function PreviewDialog({
   const dialog = useRef<HTMLDialogElement>(null);
   const config: Flow | null =
     request.kind === "form" ? flows[request.key] : null;
-  const info = request.kind === "info" ? infoContent[request.key] : null;
+  const info = request.kind === "info" ? 
+  infoContent[request.key] : null;
+  const applicationPath =
+    request.kind === "form" && (request.key   === "engine" || request.key === "publishing")
+      ? request.key
+      : null;
   useEffect(() => {
     const element = dialog.current!;
     element.showModal();
@@ -253,7 +260,7 @@ function PreviewDialog({
         ×
       </button>
       <p className="eyebrow">
-        {config ? "Form placeholder" : "Preview information"}
+                {applicationPath ? "Application" : config ? "Form placeholder" : "Preview information"}
       </p>
       <h2 id="dialog-title">{config?.title ?? info?.title}</h2>
       <p id="dialog-intro">{config?.intro ?? info?.copy}</p>
@@ -262,7 +269,8 @@ function PreviewDialog({
           <strong>Selected asset:</strong> {request.subject}
         </p>
       )}
-      {config && (
+            {applicationPath && <AccessForm initialPath={applicationPath} />}
+      {config && !applicationPath && (
         <>
           <p className="disclosure">
             This form is a visual placeholder. Fields and submission are
@@ -327,9 +335,11 @@ function PreviewDialog({
             )}
         </>
       )}
-      <button className="button placeholder-done" onClick={close}>
-        Done
-      </button>
+            {!applicationPath && (
+        <button className="button placeholder-done" onClick={close}>
+          Done
+        </button>
+      )}
     </dialog>
   );
 }

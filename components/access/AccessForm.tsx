@@ -19,9 +19,9 @@ const emptyForm = {
 
 type FormData = typeof emptyForm;
 
-export default function AccessForm() {
+export default function AccessForm({ initialPath = "" }: { initialPath?: string }) {
   const [step, setStep] = useState(1);
-  const [form, setForm] = useState<FormData>(emptyForm);
+  const [form, setForm] = useState<FormData>({ ...emptyForm, path: initialPath });
   const [status, setStatus] = useState<Status>("idle");
 
   function update(field: keyof FormData, value: string) {
