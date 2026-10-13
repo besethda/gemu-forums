@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gemu — final site map</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#eef2f5;color:#202c36;font:15px/1.5 Arial,sans-serif}header{padding:24px 30px;background:white;border-bottom:1px solid #c6cfd5}h1{font-size:26px;margin:0 0 7px}header p{margin:0;color:#52616c}.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:16px 30px;background:#fff;position:sticky;top:0;z-index:1;border-bottom:1px solid #c6cfd5}button,.toolbar a{border:1px solid #a4b1bb;background:#fff;padding:9px 15px;border-radius:4px;font:inherit;color:inherit;text-decoration:none;cursor:pointer}button[aria-pressed="true"]{background:#202c36;color:white;border-color:#202c36}.tools{display:flex;gap:9px;align-items:center;margin-left:auto}.tools span{min-width:42px;text-align:center;font-size:13px}button:focus-visible,a:focus-visible{outline:3px solid #477b9d;outline-offset:3px}.viewer{padding:22px;overflow:auto}.sheet{margin:0 auto;min-width:0;width:100%;background:white;border:1px solid #d0d8de}.sheet img{display:block;width:100%;height:auto}footer{padding:0 30px 25px;color:#52616c;font-size:13px}footer a{color:inherit}.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}@media(max-width:600px){header,.toolbar{padding-left:18px;padding-right:18px}.tools{margin-left:0;width:100%}.viewer{padding:12px}}@media print{header,.toolbar,footer{display:none}.viewer{padding:0;overflow:visible}.sheet{width:100%!important;border:0}body{background:white}@page{size:A3 landscape;margin:8mm}}
+</style>
+</head>
+<body>
+<nav class="toolbar" aria-label="Diagram controls"><button id="hierarchy" type="button" aria-pressed="true">Site hierarchy</button><button id="journeys" type="button" aria-pressed="false">User journeys &amp; Discord</button><div class="tools"><button id="out" type="button" aria-label="Zoom out">−</button><span id="scale" aria-live="polite">Fit</span><button id="in" type="button" aria-label="Zoom in">+</button><button id="fit" type="button">Fit</button><button id="print" type="button">Print / PDF</button><a id="download" href="Gemu%20Site%20Map.svg" download>Download SVG</a></div></nav>
+<main class="viewer" aria-label="Visual site map"><figure class="sheet"><img id="diagram" src="Gemu%20Site%20Map.svg" alt="Three main pages: Home, Community and Assets. Engine, showcase, publishing, Bootcamp and partners are homepage sections. Forms and detail panels stay within their page."></figure></main>
+<footer><a href="README.md">Developer notes and page inventory</a> · <a href="Gemu%20Site%20Map.png" download>Site map PNG</a> · <a href="Gemu%20User%20Flows.png" download>User journeys PNG</a></footer>
+<script>
+'use strict';
+const img=document.getElementById('diagram'), sheet=document.querySelector('.sheet');
+let zoom=100;
+function setZoom(value){zoom=Math.max(50,Math.min(300,value));sheet.style.width=zoom+'%';document.getElementById('scale').textContent=zoom===100?'Fit':zoom+'%';}
+function show(flows){document.getElementById('hierarchy').setAttribute('aria-pressed',String(!flows));document.getElementById('journeys').setAttribute('aria-pressed',String(flows));img.src=flows?'Gemu%20User%20Flows.svg':'Gemu%20Site%20Map.svg';img.alt=flows?'Three page-based flows: Home actions open application dialogs, Community discussions connect with Discord, and Assets supports acquisition plus a separate creator submission branch.':'Three main pages: Home, Community and Assets. Engine, showcase, publishing, Bootcamp and partners are homepage sections. Forms and detail panels stay within their page.';document.getElementById('download').href=img.getAttribute('src');setZoom(100);}
+document.getElementById('hierarchy').addEventListener('click',()=>show(false));document.getElementById('journeys').addEventListener('click',()=>show(true));document.getElementById('in').addEventListener('click',()=>setZoom(zoom+25));document.getElementById('out').addEventListener('click',()=>setZoom(zoom-25));document.getElementById('fit').addEventListener('click',()=>setZoom(100));document.getElementById('print').addEventListener('click',()=>window.print());
+</script>
+</body>
+</html>
+

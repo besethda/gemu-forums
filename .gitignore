@@ -13,6 +13,13 @@
 # testing
 /coverage
 
+# Local review output: screenshots, reports, notes and generated image prompts
+/review/
+
+# Design handoff prompt references are kept locally, not versioned
+/website-guidance/Gemu Graphic Profile/AI Image Prompts.md
+/website-guidance/Homepage Wireframe/IMAGE PROMPTS.md
+
 # next.js
 /.next/
 /out/

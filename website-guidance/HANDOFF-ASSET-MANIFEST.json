@@ -1,0 +1,256 @@
+{
+  "branch": "website-first-draft",
+  "sourceDate": "2026-10-13",
+  "files": [
+    {
+      "path": "website-guidance/Homepage Wireframe/Assets Mobile.png",
+      "bytes": 36385,
+      "sha256": "0a1e3d8df1425aeff5bf6c8665260572c167f4f563c8d4357ae926e3ed1882dc"
+    },
+    {
+      "path": "website-guidance/Homepage Wireframe/Assets Preview.png",
+      "bytes": 94241,
+      "sha256": "933293390417a1a82214fbfdd72d95cfd0507ba0b33847244ac435e8cab19a3c"
+    },
+    {
+      "path": "website-guidance/Homepage Wireframe/Assets Wireframe.png",
+      "bytes": 182751,
+      "sha256": "0be21d1143c87a4cd31ee1b1cc8cd8985a58afe3f198d0e8f1626709b91ef897"
+    },
+    {
+      "path": "website-guidance/Homepage Wireframe/Community Mobile.png",
+      "bytes": 46575,
+      "sha256": "60820e56b77579a842dddf9c47ab8d30b7660993c4c80a9e6ec6f4c1fed8652d"
+    },
+    {
+      "path": "website-guidance/Homepage Wireframe/Community Preview.png",
+      "bytes": 111267,
+      "sha256": "69f3921aee6c592d968d87e962a04262b67965be683154afc4578f290f89dd63"
+    },
+    {
+      "path": "website-guidance/Homepage Wireframe/Community Wireframe.png",
+      "bytes": 186014,
+      "sha256": "e9ae3f55c6da3acc4f6e45ad43a09c058a98a8ead8dbd69a38da4860b84daa9a"
+    },
+    {
+      "path": "website-guidance/Homepage Wireframe/HANDOFF.md",
+      "bytes": 5454,
+      "sha256": "9f5fbee1f3b31c81022ca35b091e2ec5789cc21909903470d77c8d5f03f83688"
+    },
+    {
+      "path": "website-guidance/Homepage Wireframe/Homepage Mobile.png",
+      "bytes": 46179,
+      "sha256": "1cb4b5b25dffb8879f5d466195f591d545c0af164048f776e5c020324a7aa36b"
+    },
+    {
+      "path": "website-guidance/Homepage Wireframe/Homepage Preview.png",
+      "bytes": 156644,
+      "sha256": "10487c2df17cea94fcf26a2e69a36451781655bafcbd9add5e256dda6e0228b7"
+    },
+    {
+      "path": "website-guidance/Homepage Wireframe/Homepage Wireframe.png",
+      "bytes": 442234,
+      "sha256": "d87ea00f5dd2d27404bf4e9897dcd6bd2ffe05873e82d51f0778c454abff4da9"
+    },
+    {
+      "path": "website-guidance/Homepage Wireframe/IMAGE PROMPTS.md",
+      "bytes": 2334,
+      "sha256": "64c84b62bdeee524430134dfca7db7db11a690ee8ebc9b9028ddd32104c3a733"
+    },
+    {
+      "path": "website-guidance/Homepage Wireframe/README.md",
+      "bytes": 2911,
+      "sha256": "55bb8c6c188b70c17b43c5442d35cdbb39ee6ee28161fdc5040bee9a107df9d4"
+    },
+    {
+      "path": "website-guidance/Homepage Wireframe/dist/app.js",
+      "bytes": 17789,
+      "sha256": "c6447f1525ef41d0f435329129acc00e36c9c4728756639be3e2809e34471d62"
+    },
+    {
+      "path": "website-guidance/Homepage Wireframe/dist/assets.html",
+      "bytes": 6435,
+      "sha256": "46c6abff485d7392e1b91188d6eee34410ca96f16b9b662711e80fb39f258eff"
+    },
+    {
+      "path": "website-guidance/Homepage Wireframe/dist/community.html",
+      "bytes": 6298,
+      "sha256": "a38ed9323527d8f0f4b1dd32ab84f9510df0b31f94add6404a2f69991be390fd"
+    },
+    {
+      "path": "website-guidance/Homepage Wireframe/dist/index.html",
+      "bytes": 9419,
+      "sha256": "7f1c7d2e97c0eb8feeae62e033f2bb58da404411b91481021a8519c7c3b68c61"
+    },
+    {
+      "path": "website-guidance/Homepage Wireframe/dist/styles.css",
+      "bytes": 16033,
+      "sha256": "0a9cd46a61f9d4b5d69379de02f7a25b0e1ce8206a5faebe26c4fa2992bb3b71"
+    },
+    {
+      "path": "website-guidance/Homepage Wireframe/dist/media/voxel-cabin.png",
+      "bytes": 1978466,
+      "sha256": "8a7565a894d5e3d1842010272e29e247b63bc4d214bf5e4175dae36208ea3980"
+    },
+    {
+      "path": "website-guidance/Homepage Wireframe/dist/media/voxel-robot.png",
+      "bytes": 1710100,
+      "sha256": "d98bf69cfe2fc76f64f704ef6ed60593eb93dda80604ea9a3d292164236ad257"
+    },
+    {
+      "path": "website-guidance/Homepage Wireframe/dist/media/voxel-world.png",
+      "bytes": 2512358,
+      "sha256": "a7a82f13cb9b6e3ea8b1e902d0efc8b6fa94d9b1352aaa46073811a40f9cfd32"
+    },
+    {
+      "path": "website-guidance/Site Map/Gemu Site Map.png",
+      "bytes": 149979,
+      "sha256": "adb1ee2b16800930c27fd2a6e171a002532355d6d40ead198b6bd6a0f8c6dd28"
+    },
+    {
+      "path": "website-guidance/Site Map/Gemu Site Map.svg",
+      "bytes": 6733,
+      "sha256": "44ce645a24d3c77ac35a6b2840d746d1f696a8643691b794efa3fa45425321b9"
+    },
+    {
+      "path": "website-guidance/Site Map/Gemu User Flows.png",
+      "bytes": 119275,
+      "sha256": "c74ae6a9a52abfdc2628a850ee6ee233d918cbaed07d8b849c631af6e0398d48"
+    },
+    {
+      "path": "website-guidance/Site Map/Gemu User Flows.svg",
+      "bytes": 8526,
+      "sha256": "7441b7d33d4331ec46658baaeba60bab0a36513d1db98f9d157feb6ecac7bdfc"
+    },
+    {
+      "path": "website-guidance/Site Map/index.html",
+      "bytes": 4304,
+      "sha256": "8096615d3acc39144ce3ba2f12c03d198367333633701e29871e7df3b73b741c"
+    },
+    {
+      "path": "website-guidance/Site Map/pages.json",
+      "bytes": 2230,
+      "sha256": "a8d31bfdb012ab660a89df755370a87328a6b285a76879d128cbe44650074efd"
+    },
+    {
+      "path": "website-guidance/Site Map/README.md",
+      "bytes": 4220,
+      "sha256": "98144771bcfb344cee23c80dbeb93baf6703333ac0a7e5746ac49c7ffdb3a3eb"
+    },
+    {
+      "path": "website-guidance/Gemu Graphic Profile/AI Image Prompts.md",
+      "bytes": 2715,
+      "sha256": "c175f79d9f7f5c7e1f509969c2f1f7fea6d8c35cbc5756fb8ba15ac115e8bda3"
+    },
+    {
+      "path": "website-guidance/Gemu Graphic Profile/design-tokens.json",
+      "bytes": 2105,
+      "sha256": "12b31d044bd444a7c5f3ef912e172e724f9790516d26bbce8aca634ae0c49b80"
+    },
+    {
+      "path": "website-guidance/Gemu Graphic Profile/Gemu Graphic Profile.html",
+      "bytes": 22430792,
+      "sha256": "ad1cdb821d84537b27acfeaf4abe9a8523e96510177785d88e9e575f22a1cc63"
+    },
+    {
+      "path": "website-guidance/Gemu Graphic Profile/gemu-tokens.css",
+      "bytes": 2152,
+      "sha256": "f9e4fd09cb706d1d9e3d350f917e35906844459938b6ca87bef667bbcff24505"
+    },
+    {
+      "path": "website-guidance/Gemu Graphic Profile/Graphic Profile Full.png",
+      "bytes": 1000064,
+      "sha256": "df649160552e825def6293d3bfc3f557fbfc1f0970a650e6f68bfc0a3fd1f3e3"
+    },
+    {
+      "path": "website-guidance/Gemu Graphic Profile/Graphic Profile Mobile.png",
+      "bytes": 35740,
+      "sha256": "c3f49d3d4e0ee42d2085252456aaa6adc75a279b6ecd0a42e37d0d633e2b70d5"
+    },
+    {
+      "path": "website-guidance/Gemu Graphic Profile/Graphic Profile Preview.png",
+      "bytes": 82353,
+      "sha256": "75858292f0543117afbf95344bed349e0db1d41e1bbec9fb2244b8043164a665"
+    },
+    {
+      "path": "website-guidance/Gemu Graphic Profile/README.md",
+      "bytes": 4286,
+      "sha256": "f81f5ae5d80747ba3556440baf89c73048b51f5516fb6d2b304e2ab64a4c4fad"
+    },
+    {
+      "path": "website-guidance/Gemu Graphic Profile/source-evidence.json",
+      "bytes": 1844,
+      "sha256": "3a1b0e83723d10766170d0f22f2f6f0c1ea268e76fa629c93a66c902bde7ddd7"
+    },
+    {
+      "path": "website-guidance/Gemu Graphic Profile/sources/chosen-reference.png",
+      "bytes": 9469,
+      "sha256": "cf13521938690fa1c3682be6ee2565cc0b8fead968f2faa46e29ae7dbae9c2c5"
+    },
+    {
+      "path": "website-guidance/Gemu Graphic Profile/sources/construction-grid.png",
+      "bytes": 19443,
+      "sha256": "4dd548df391e3daaa8abfa313e8cb74cb0460e6eb81a40fae836d77164f759c3"
+    },
+    {
+      "path": "website-guidance/Gemu Graphic Profile/sources/Inter-variable.ttf",
+      "bytes": 876576,
+      "sha256": "29160a80ff49ddcab2c97711247e08b1fab27a484a329ce8b813d820dc559031"
+    },
+    {
+      "path": "website-guidance/Gemu Graphic Profile/sources/logo-black.png",
+      "bytes": 8491,
+      "sha256": "25979381693f08da6593cc37e961d47cdd4d77c0306952ec807811ffeb90c6e4"
+    },
+    {
+      "path": "website-guidance/Gemu Graphic Profile/sources/logo-white.png",
+      "bytes": 8332,
+      "sha256": "b8168b1a7e808ffef7891f3c15b579d2d363332532bdcd097caf06b12736d8a9"
+    },
+    {
+      "path": "website-guidance/Gemu Graphic Profile/sources/OFL-Inter.txt",
+      "bytes": 4377,
+      "sha256": "5b9321a4298cfeb6b34354164a1c3afc3db114569984c502b9b35d988fd58c57"
+    },
+    {
+      "path": "website-guidance/Gemu Graphic Profile/sources/voxel-cabin.png",
+      "bytes": 1978466,
+      "sha256": "8a7565a894d5e3d1842010272e29e247b63bc4d214bf5e4175dae36208ea3980"
+    },
+    {
+      "path": "website-guidance/Gemu Graphic Profile/sources/voxel-cathedral-reference.png",
+      "bytes": 3340237,
+      "sha256": "13d36122256917fbeefc36c0291cee6c3eeff724db77265e57c899803c39f78b"
+    },
+    {
+      "path": "website-guidance/Gemu Graphic Profile/sources/voxel-robot.png",
+      "bytes": 1710100,
+      "sha256": "d98bf69cfe2fc76f64f704ef6ed60593eb93dda80604ea9a3d292164236ad257"
+    },
+    {
+      "path": "website-guidance/Gemu Graphic Profile/sources/voxel-street-reference.png",
+      "bytes": 3225655,
+      "sha256": "0b7babcc7ae76505f786ff481f5da49723863ad72a2ff1e2b225e2c56907fd46"
+    },
+    {
+      "path": "website-guidance/Gemu Graphic Profile/sources/voxel-tower-reference.png",
+      "bytes": 3065526,
+      "sha256": "d8c65d3ec8c40aa84a371d243d377b05ad6ca82b11f4e28d7ddf7a1298cee943"
+    },
+    {
+      "path": "website-guidance/Gemu Graphic Profile/sources/voxel-world.png",
+      "bytes": 2512358,
+      "sha256": "a7a82f13cb9b6e3ea8b1e902d0efc8b6fa94d9b1352aaa46073811a40f9cfd32"
+    },
+    {
+      "path": "website-guidance/Source Materials/Gemu Company Case Submission.pdf",
+      "bytes": 130253,
+      "sha256": "2de5cdbd2363df08c8bae3540fa82b37e01895088d5b6e468f56dbd5f716f814"
+    },
+    {
+      "path": "website-guidance/Source Materials/Gemu Engine Intro - Transcript.md",
+      "bytes": 15014,
+      "sha256": "007d1f84525aa7c458577e7b19a03bf5ff7357349ebf12b718bd550abc12048c"
+    }
+  ]
+}
