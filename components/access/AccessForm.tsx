@@ -42,7 +42,8 @@ export default function AccessForm({ initialPath = "" }: { initialPath?: string 
           ["What they want to build", form.project],
           ["Experience", form.experience],
         ]
-      : [
+
+              : [
           ["Game title", form.gameTitle],
           ["Stage", form.stage],
           ["Support needed", form.support],
@@ -50,28 +51,46 @@ export default function AccessForm({ initialPath = "" }: { initialPath?: string 
         ]),
   ];
 
+  const support = form.support.toLowerCase();
+  const isBeginner =
+    (isEngine && (form.experience === "None yet" || form.experience === "Hobby projects")) ||
+    form.role === "Student";
+
+  const tags = [
+    isEngine ? "Engine applicant" : "Game submission",
+    form.role,
+    ...(isBeginner ? ["Bootcamp candidate"] : []),
+    ...(form.role === "Industry veteran starting a studio" ? ["Future studio founder"] : []),
+    ...(!isEngine && form.stage ? [`Stage: ${form.stage}`] : []),
+    ...(!isEngine && (support.includes("fund") || support.includes("invest")) ? ["Investor match"] : []),
+  ];
+
+ 
+
   async function send() {
     setStatus("sending");
     const teamEmail = process.env.NEXT_PUBLIC_GEMU_TEAM_EMAIL!;
     const summary = answers.map(([label, value]) => `${label}: ${value}`).join("\n");
-        const publishingNote = isEngine
+    const publishingNote = isEngine
       ? ""
       : "\n\nPublishing with Gemu is optional and separate from engine access. Submitting a game never affects your access to the engine.";
-
+    const bootcampNote = isBeginner
+      ? "\n\nNew to voxel development? The Gemu Bootcamp helps you learn the engine with mentors and build your first project. Reply to this email if you would like an invite."
+      : "";
     try {
       await sendEmail({
         toEmail: teamEmail,
         subject: isEngine
           ? `New engine access request from ${form.name}`
           : `New game submission: ${form.gameTitle}`,
-        message: `A new application came in through the website.\n\n${summary}`,
+        message: `A new application came in through the website.\n\nCRM tags: ${tags.join(", ")}\n\n${summary}`,
         replyTo: form.email,
       });
 
       await sendEmail({
         toEmail: form.email,
         subject: "We received your Gemu application",
-        message: `Hi ${form.name},\n\nThanks for your application. The Gemu team will review it soon and reply to this email address.${publishingNote}\n\nYour answers:\n${summary}\n\nThe Gemu team`,
+        message: `Hi ${form.name},\n\nThanks for your application. The Gemu team will review it soon and reply to this email address.${publishingNote}${bootcampNote}\n\nYour answers:\n${summary}\n\nThe Gemu team`,
         replyTo: teamEmail,
       });
 
