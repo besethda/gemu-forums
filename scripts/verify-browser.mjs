@@ -245,46 +245,84 @@ try {
     /not a downloadable product/,
   );
   await page.keyboard.press("Escape");
+  await visit("/assets");
   await page.getByLabel("Search assets").fill("CABIN");
-  assert.equal(await page.locator(".asset-card").count(), 2);
-  assert.equal(await page.locator("#asset-detail").count(), 0);
-  await page.getByLabel("Category", { exact: true }).selectOption("Models");
-  assert.equal(await page.locator(".asset-card").count(), 1);
-  const cabin = page.getByRole("button", {
-    name: "View Timber cabin kit",
-    exact: true,
-  });
-  await cabin.click();
-  await page.locator("#asset-detail").waitFor();
-  assert.equal(
-    await page.locator("#asset-title").textContent(),
-    "Timber cabin kit",
-  );
-  await page.waitForFunction(
-    () => document.activeElement.id === "asset-detail",
-  );
-  await page.getByRole("button", { name: "Close detail" }).click();
-  assert.ok(await cabin.evaluate((node) => document.activeElement === node));
-  await page.getByLabel("Search assets").fill("nothing matches");
-  assert.equal(await page.locator(".asset-card").count(), 0);
+  assert.equal(await page.locator(".market-card").count(), 2);
+  await page
+    .getByLabel("Category", { exact: true })
+    .selectOption("Environments");
+  assert.equal(await page.locator(".market-card").count(), 0);
   await page.getByRole("button", { name: "Clear filters" }).click();
-  assert.equal(await page.locator(".asset-card").count(), 4);
+  assert.equal(await page.locator(".market-card").count(), 10);
+  await page.getByLabel("Sort by").selectOption("name");
+  const names = await page.locator(".market-card h3").allTextContents();
+  assert.deepEqual(
+    names,
+    [...names].sort((a, b) => a.localeCompare(b)),
+  );
+  await page.getByRole("button", { name: "Reset catalogue" }).click();
   await placeholder(
     page
-      .locator(".page-intro")
+      .locator(".market-intro")
       .getByRole("button", { name: "Share or sell your work" }),
     "Share or sell your work",
   );
   await page
-    .getByRole("button", { name: "View Utility robot", exact: true })
+    .getByRole("link", { name: "View Timber cabin kit", exact: true })
     .click();
+  await page.waitForURL("**/assets/cabin");
+  assert.equal(
+    await page.locator("#asset-title").textContent(),
+    "Timber cabin kit",
+  );
+  assert.equal(
+    await page
+      .locator('nav[aria-label="Main navigation"] a[href="/assets"]')
+      .getAttribute("aria-current"),
+    "page",
+  );
+  await page.getByRole("button", { name: "Next preview", exact: true }).click();
+  assert.equal(
+    await page
+      .getByRole("button", { name: "Show related world concept", exact: true })
+      .getAttribute("aria-pressed"),
+    "true",
+  );
+  await page
+    .getByRole("button", { name: "Show asset concept", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Expand image preview", exact: true })
+    .click();
+  await page.getByRole("dialog").waitFor({ state: "visible" });
+  await page.keyboard.press("Escape");
+  await page.getByRole("dialog").waitFor({ state: "hidden" });
+  await page
+    .getByRole("tab", { name: "Technical details", exact: true })
+    .click();
+  assert.equal(
+    await page
+      .getByRole("tabpanel", { name: "Technical details", exact: true })
+      .isVisible(),
+    true,
+  );
+  await page
+    .getByRole("tab", { name: "Technical details", exact: true })
+    .press("ArrowRight");
+  assert.equal(
+    await page
+      .getByRole("tab", { name: "Reviews", exact: true })
+      .getAttribute("aria-selected"),
+    "true",
+  );
+  await page.getByRole("tab", { name: "Overview", exact: true }).click();
   await page.screenshot({
     path: path.join(output, "screenshots", "asset-detail-1440.png"),
     fullPage: true,
   });
   results.push({
     check:
-      "Asset deep link, search, combined filter, empty/reset state, selection/close and acquisition placeholder",
+      "Catalogue search/category/sort/empty/reset states; detail navigation, gallery, expansion, information tabs, legacy deep link and acquisition placeholder",
     passed: true,
   });
   for (const width of [390, 320]) {
@@ -299,8 +337,9 @@ try {
     );
     await visit("/assets");
     await page
-      .getByRole("button", { name: "View Utility robot", exact: true })
+      .getByRole("link", { name: "View Utility robot", exact: true })
       .click();
+    await page.waitForURL("**/assets/robot");
     await fit(`Asset detail at ${width}px`);
     await visit("/community");
     await page.getByRole("button", { name: "Reply on website" }).click();

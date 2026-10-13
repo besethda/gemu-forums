@@ -10,20 +10,8 @@ export default function Home() {
         aria-labelledby="hero-title"
       >
         <div className="container">
-          <div className="hero-brand">
-            <Image
-              src="/gemu/construction-grid.png"
-              width={2800}
-              height={658}
-              alt=""
-              unoptimized
-            />
-            <span className="utility">Voxel game engine & publishing</span>
-            <span className="utility">Built around creators</span>
-          </div>
           <div className="hero-layout">
             <div className="hero-copy">
-              <p className="eyebrow">Your world starts here</p>
               <h1 id="hero-title">
                 Make a game.
                 <br />
@@ -56,10 +44,6 @@ export default function Home() {
                 sizes="(max-width: 800px) 100vw, 55vw"
                 preload
               />
-              <figcaption>
-                <span>Imagine your next world.</span>
-                <span>AI concept illustration</span>
-              </figcaption>
             </figure>
           </div>
         </div>
@@ -84,58 +68,81 @@ export default function Home() {
           </strong>
         </Link>
       </div>
-      <section id="engine" className="section container engine-layout">
-        <div>
-          <p className="eyebrow">Gemu Engine</p>
-          <h2>
-            Build the world.
-            <br />
-            Play in it together.
-          </h2>
-          <p>
-            A voxel engine with core systems built in, so you can focus on your
-            game.
-          </p>
+      <section id="engine" className="section container">
+        <div className="engine-intro">
+          <div>
+            <h2>Gemu Engine</h2>
+            <p>
+              A voxel engine with core systems built in, so you can focus on
+              your game.
+            </p>
+          </div>
           <Action flow="engine">
             Request engine access <span aria-hidden="true">↗</span>
           </Action>
         </div>
         <div className="capabilities">
           <article>
-            <span className="feature-symbol" aria-hidden="true">
-              ⊞
-            </span>
-            <h3>Multiplayer & physics</h3>
-            <p>
-              Built-in multiplayer and advanced physics for connected worlds.
-            </p>
+            <Image
+              src="/gemu/feature-multiplayer-physics.png"
+              alt="Voxel concept of two robot players balancing and moving a stack of cubes"
+              width={1536}
+              height={1024}
+              sizes="(max-width: 500px) 100vw, (max-width: 800px) 50vw, 25vw"
+            />
+            <div className="capability-copy">
+              <h3>Multiplayer & physics</h3>
+              <p>
+                Built-in multiplayer and advanced physics for connected worlds.
+              </p>
+            </div>
           </article>
           <article>
-            <span className="feature-symbol" aria-hidden="true">
-              ◈
-            </span>
-            <h3>Lighting & audio</h3>
-            <p>
-              Native ray-traced lighting and audio for your voxel environments.
-            </p>
+            <Image
+              src="/gemu/feature-lighting-audio.png"
+              alt="Voxel concept of a room with geometric light, shadows and a speaker"
+              width={1536}
+              height={1024}
+              sizes="(max-width: 500px) 100vw, (max-width: 800px) 50vw, 25vw"
+            />
+            <div className="capability-copy">
+              <h3>Lighting & audio</h3>
+              <p>
+                Native ray-traced lighting and audio for your voxel
+                environments.
+              </p>
+            </div>
           </article>
           <article>
-            <span className="feature-symbol" aria-hidden="true">
-              ↗
-            </span>
-            <h3>Steam integration</h3>
-            <p>
-              Steam backend integration as part of the development workflow.
-            </p>
+            <Image
+              src="/gemu/feature-steam-integration.png"
+              alt="Voxel concept of a game controller on connected platforms"
+              width={1536}
+              height={1024}
+              sizes="(max-width: 500px) 100vw, (max-width: 800px) 50vw, 25vw"
+            />
+            <div className="capability-copy">
+              <h3>Steam integration</h3>
+              <p>
+                Steam backend integration as part of the development workflow.
+              </p>
+            </div>
           </article>
           <article>
-            <span className="feature-symbol" aria-hidden="true">
-              ⊡
-            </span>
-            <h3>Connect your tools</h3>
-            <p>Native Model Context Protocol support for compatible tools.</p>
+            <Image
+              src="/gemu/feature-connected-tools.png"
+              alt="Voxel concept of a workbench with modular blocks, a wrench and connectors"
+              width={1536}
+              height={1024}
+              sizes="(max-width: 500px) 100vw, (max-width: 800px) 50vw, 25vw"
+            />
+            <div className="capability-copy">
+              <h3>Connect your tools</h3>
+              <p>Native Model Context Protocol support for compatible tools.</p>
+            </div>
           </article>
         </div>
+        <p className="small capability-note">AI concept illustrations</p>
       </section>
       <div className="resource-strip container">
         <strong>Already building?</strong>
@@ -150,14 +157,8 @@ export default function Home() {
         <div className="container">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">A place for voxel creators</p>
-              <h2>See the possibilities.</h2>
+              <h2>A place for voxel creators</h2>
             </div>
-            <p>
-              Worlds to imagine. Building blocks to explore.
-              <br />
-              Concept imagery for this first draft.
-            </p>
           </div>
           <div className="showcase-grid">
             <figure>
@@ -166,7 +167,7 @@ export default function Home() {
                 alt="Voxel forest and river environment concept"
                 width={1672}
                 height={941}
-                sizes="(max-width: 800px) 100vw, 60vw"
+                sizes="(max-width: 800px) 100vw, 50vw"
               />
               <figcaption>
                 <span className="eyebrow">AI concept illustration</span>
@@ -183,7 +184,7 @@ export default function Home() {
                 alt="Modular timber cabin and separate building pieces made of voxels"
                 width={1448}
                 height={1086}
-                sizes="(max-width: 800px) 100vw, 40vw"
+                sizes="(max-width: 800px) 100vw, 50vw"
               />
               <figcaption>
                 <span className="eyebrow">AI concept illustration</span>
@@ -202,7 +203,6 @@ export default function Home() {
       </section>
       <section id="publishing" className="section container two-column">
         <div>
-          <p className="eyebrow">Gemu Publishing</p>
           <h2>
             Got a game?
             <br />
@@ -215,7 +215,6 @@ export default function Home() {
           <Action flow="publishing">
             Submit a game <span aria-hidden="true">→</span>
           </Action>
-          <p className="small">A separate application from engine access.</p>
         </div>
         <ol className="publishing-steps">
           <li>
@@ -254,15 +253,9 @@ export default function Home() {
               height={1086}
               sizes="(max-width: 800px) 100vw, 50vw"
             />
-            <figcaption className="small">AI concept illustration</figcaption>
           </figure>
           <div>
-            <p className="eyebrow">Gemu Bootcamp</p>
-            <h2>
-              Start making.
-              <br />
-              Keep learning.
-            </h2>
+            <h2>GEMU Bootcamp</h2>
             <p>
               Explore a path from your first project toward building a studio.
               Tell us what you want to learn and where you are starting.
@@ -278,7 +271,6 @@ export default function Home() {
       </section>
       <section id="partners" className="section container two-column">
         <div>
-          <p className="eyebrow">Investors & partners</p>
           <h2>
             Support the
             <br />
@@ -309,7 +301,6 @@ export default function Home() {
       <section className="closing dark grid-surface">
         <div className="container">
           <div>
-            <p className="eyebrow">From an idea to a world</p>
             <h2>
               What do you
               <br />

@@ -81,14 +81,6 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       <a className="skip-link" href="#main">
         Skip to content
       </a>
-      <div className="review-bar">
-        <div className="container">
-          <span>First draft · Local demo</span>
-          <Action info="draft" className="text-button">
-            About this preview <span aria-hidden="true">↗</span>
-          </Action>
-        </div>
-      </div>
       <header className="site-header dark">
         <div className="container header-inner">
           <Link href="/" aria-label="Gemu home" onClick={() => setMenu(false)}>
@@ -116,7 +108,12 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
               <Link
                 key={href}
                 href={href}
-                aria-current={pathname === href ? "page" : undefined}
+                aria-current={
+                  pathname === href ||
+                  (href !== "/" && pathname.startsWith(`${href}/`))
+                    ? "page"
+                    : undefined
+                }
                 onClick={() => setMenu(false)}
               >
                 {label}

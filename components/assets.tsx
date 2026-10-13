@@ -1,84 +1,84 @@
 "use client";
-import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
 import { Action } from "./site-shell";
+import { AssetCollection } from "./asset-collection";
+import { AssetCard } from "./asset-card";
+import { AssetDetail } from "./asset-detail";
 import { sampleAssets, categories } from "@/lib/demo-data";
 
 export function Assets() {
   const params = useSearchParams();
+  const legacyAsset = sampleAssets.find(
+    (asset) => asset.id === params.get("asset"),
+  );
+  const categoryFromUrl = params.get("category");
+  const initialCategory =
+    categoryFromUrl && categories.includes(categoryFromUrl)
+      ? categoryFromUrl
+      : "all";
+  return legacyAsset ? (
+    <AssetDetail key={legacyAsset.id} asset={legacyAsset} />
+  ) : (
+    <AssetCatalogue key={initialCategory} initialCategory={initialCategory} />
+  );
+}
+function AssetCatalogue({ initialCategory }: { initialCategory: string }) {
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("all");
-  const [selected, setSelected] = useState<string | null>(params.get("asset"));
-  const detail = useRef<HTMLElement>(null);
-  const cards = useRef<Record<string, HTMLButtonElement | null>>({});
+  const [category, setCategory] = useState(initialCategory);
+  const [sort, setSort] = useState("recommended");
+  const [showAll, setShowAll] = useState(false);
+  const browseHeading = useRef<HTMLHeadingElement>(null);
   const query = search.trim().toLowerCase();
   const filtered = sampleAssets.filter(
     (asset) =>
       (category === "all" || asset.category === category) &&
-      `${asset.name} ${asset.category} ${asset.description}`
+      `${asset.name} ${asset.category} ${asset.creator} ${asset.description}`
         .toLowerCase()
         .includes(query),
   );
-  const asset = filtered.find((a) => a.id === selected);
+  const sorted = [...filtered].sort((a, b) =>
+    sort === "name"
+      ? a.name.localeCompare(b.name)
+      : sort === "category"
+        ? a.category.localeCompare(b.category) || a.name.localeCompare(b.name)
+        : 0,
+  );
+  const browsingAll =
+    showAll || !!query || category !== "all" || sort !== "recommended";
   function reset() {
     setSearch("");
     setCategory("all");
-    setSelected(null);
+    setSort("recommended");
+    setShowAll(false);
+  }
+  function seeAll() {
+    setShowAll(true);
+    requestAnimationFrame(() => browseHeading.current?.focus());
   }
   return (
     <>
-      <section className="page-intro dark grid-surface">
-        <div className="container page-intro-layout">
+      <section className="market-intro dark">
+        <div className="container market-intro-inner">
           <div>
-            <p className="eyebrow">Voxel creator marketplace</p>
-            <h1>
-              Build on what
-              <br />
-              others make.
-            </h1>
-            <p className="lead">
-              Explore models, environments and tools.
-              <br />
-              Find a place for your own creations.
-            </p>
-            <Action flow="creator">
-              Share or sell your work <span aria-hidden="true">↗</span>
-            </Action>
+            <h1>Voxel assets</h1>
+            <p>Building blocks for your next world.</p>
           </div>
-          <figure className="intro-visual asset-intro">
-            <Image
-              src="/gemu/voxel-robot.png"
-              alt="Friendly voxel utility robot concept with complete silhouette"
-              width={1448}
-              height={1086}
-              sizes="(max-width: 800px) 100vw, 35vw"
-              preload
-            />
-            <figcaption>AI concept illustration · Sample asset</figcaption>
-          </figure>
+          <Action flow="creator" className="button secondary">
+            Share or sell your work <span aria-hidden="true">↗</span>
+          </Action>
         </div>
       </section>
-      <section
-        className="section container browse-section"
-        aria-labelledby="assets-heading"
-      >
-        <div className="section-heading">
-          <h2 id="assets-heading">Explore voxel assets</h2>
-          <span className="tag">Sample catalogue · No real products</span>
-        </div>
-        <div className="filter-row">
+      <div className="container market-main">
+        <div className="market-toolbar">
           <div className="search-field">
             <label htmlFor="asset-search">Search assets</label>
             <input
               id="asset-search"
               type="search"
-              placeholder="Try cabin, forest or robot"
+              placeholder="Search models, environments and tools"
               value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setSelected(null);
-              }}
+              onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <div>
@@ -86,10 +86,7 @@ export function Assets() {
             <select
               id="asset-category"
               value={category}
-              onChange={(e) => {
-                setCategory(e.target.value);
-                setSelected(null);
-              }}
+              onChange={(e) => setCategory(e.target.value)}
             >
               <option value="all">All categories</option>
               {categories.map((c) => (
@@ -97,53 +94,46 @@ export function Assets() {
               ))}
             </select>
           </div>
+          <div>
+            <label htmlFor="asset-sort">Sort by</label>
+            <select
+              id="asset-sort"
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+            >
+              <option value="recommended">Featured order</option>
+              <option value="name">Name: A–Z</option>
+              <option value="category">Category</option>
+            </select>
+          </div>
         </div>
-        <p className="result-count" role="status">
-          {filtered.length} sample listing{filtered.length !== 1 && "s"}
-          {query || category !== "all"
-            ? " matching your filters"
-            : " to explore"}
-        </p>
-        <div className={`assets-layout ${asset ? "has-detail" : ""}`}>
-          <div className="asset-grid">
-            {filtered.map((a) => (
-              <article
-                key={a.id}
-                className={`asset-card ${selected === a.id ? "selected" : ""}`}
-              >
-                <button
-                  ref={(node) => {
-                    cards.current[a.id] = node;
-                  }}
-                  className="asset-select"
-                  aria-label={`View ${a.name}`}
-                  aria-pressed={selected === a.id}
-                  aria-controls={asset ? "asset-detail" : undefined}
-                  onClick={() => {
-                    setSelected(a.id);
-                    requestAnimationFrame(() => detail.current?.focus());
-                  }}
-                >
-                  <div className="asset-image">
-                    <Image
-                      src={`/gemu/${a.image}`}
-                      alt={a.alt}
-                      width={a.image === "voxel-world.png" ? 1672 : 1448}
-                      height={a.image === "voxel-world.png" ? 941 : 1086}
-                      sizes="(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 33vw"
-                    />
-                  </div>
-                  <div className="asset-card-copy">
-                    <span className="eyebrow">{a.category}</span>
-                    <h3>
-                      {a.name} <span aria-hidden="true">↗</span>
-                    </h3>
-                    <p className="small">Concept image · Sample listing</p>
-                  </div>
-                </button>
-              </article>
-            ))}
-            {!filtered.length && (
+        <div className="catalogue-note">
+          <p>
+            Preview catalogue · Fictional creators and placeholder prices.
+            Reviews and downloads are unavailable.
+          </p>
+          <span role="status">
+            {filtered.length} sample assets
+            {query || category !== "all" ? " found" : " to explore"}
+          </span>
+        </div>
+        {browsingAll ? (
+          <section className="asset-collection" aria-labelledby="browse-title">
+            <div className="collection-heading">
+              <h2 id="browse-title" ref={browseHeading} tabIndex={-1}>
+                {query || category !== "all" ? "Search results" : "All assets"}
+              </h2>
+              <button className="text-button" onClick={reset}>
+                Reset catalogue
+              </button>
+            </div>
+            {sorted.length ? (
+              <div className="market-grid">
+                {sorted.map((asset) => (
+                  <AssetCard key={asset.id} asset={asset} />
+                ))}
+              </div>
+            ) : (
               <div className="empty-state">
                 <h3>No matching assets.</h3>
                 <p>
@@ -155,86 +145,39 @@ export function Assets() {
                 </button>
               </div>
             )}
-          </div>
-          {asset && (
-            <section
-              ref={detail}
-              tabIndex={-1}
-              className="detail-panel asset-detail"
-              id="asset-detail"
-              aria-labelledby="asset-title"
-            >
-              <button
-                className="text-button close-detail"
-                onClick={() => {
-                  setSelected(null);
-                  cards.current[asset.id]?.focus();
-                }}
-              >
-                Close detail <span aria-hidden="true">×</span>
-              </button>
-              <p className="eyebrow">{asset.category} · Sample listing</p>
-              <h2 id="asset-title">{asset.name}</h2>
-              <Image
-                src={`/gemu/${asset.image}`}
-                alt={asset.alt}
-                width={asset.image === "voxel-world.png" ? 1672 : 1448}
-                height={asset.image === "voxel-world.png" ? 941 : 1086}
-                className="detail-image"
-                sizes="(max-width: 800px) 100vw, 40vw"
-              />
-              <p>{asset.description}</p>
-              <dl className="asset-facts">
-                <div>
-                  <dt>Creator</dt>
-                  <dd>Sample creator · Identity unverified</dd>
-                </div>
-                <div>
-                  <dt>License</dt>
-                  <dd>Not established · Preview only</dd>
-                </div>
-                <div>
-                  <dt>Compatibility</dt>
-                  <dd>Gemu version and file format unconfirmed</dd>
-                </div>
-                <div>
-                  <dt>Availability</dt>
-                  <dd>No model, tool, price or download supplied</dd>
-                </div>
-              </dl>
-              <Action info="acquire" subject={asset.name}>
-                Get asset — preview <span aria-hidden="true">↗</span>
-              </Action>
-              <p className="small panel-note">
-                AI concept illustration. This listing is not a real product.
-              </p>
-            </section>
-          )}
-        </div>
-      </section>
-      <section className="creator-section">
-        <div className="container two-column">
+          </section>
+        ) : (
+          <>
+            <AssetCollection
+              title="Featured assets"
+              assets={sampleAssets.filter((a) => a.featured)}
+              action={
+                <button className="text-button" onClick={seeAll}>
+                  See all <span aria-hidden="true">→</span>
+                </button>
+              }
+            />
+            <AssetCollection
+              title="More to explore"
+              assets={sampleAssets.filter((a) => !a.featured)}
+              action={
+                <button className="text-button" onClick={seeAll}>
+                  See all <span aria-hidden="true">→</span>
+                </button>
+              }
+            />
+          </>
+        )}
+      </div>
+      <section className="market-creator-strip">
+        <div className="container">
           <div>
-            <p className="eyebrow">Made for voxel creators</p>
-            <h2>
-              Your work could be
-              <br />
-              someone&apos;s starting point.
-            </h2>
+            <h2>Made something worth sharing?</h2>
+            <p>Introduce a model, environment or tool of your own.</p>
           </div>
-          <div>
-            <p>
-              Have a model, environment or tool to share? Introduce your work
-              and how you would like others to use it.
-            </p>
-            <Action flow="creator">
-              Share or sell your work <span aria-hidden="true">↗</span>
-            </Action>
-            <p className="small">
-              Submission preview only. Rights, compatibility and review would be
-              checked before a real listing.
-            </p>
-          </div>
+          <Action flow="creator">
+            Share or sell your work <span aria-hidden="true">↗</span>
+          </Action>
         </div>
       </section>
     </>

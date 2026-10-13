@@ -205,11 +205,23 @@ export const infoContent = {
   },
   acquire: {
     title: "Get asset — preview",
-    copy: "This is a sample listing with concept imagery, not a downloadable product. A real acquisition would require verified creator rights, a license, engine compatibility and a delivery service, plus payments for paid assets. Nothing is purchased, downloaded or added to an engine project here.",
+    copy: "This listing uses concept imagery and placeholder pricing, not a downloadable product. A real acquisition would require verified creator rights, a license, engine compatibility and a delivery service, plus payments for paid assets. Nothing is purchased, downloaded or added to an engine project here.",
   },
-  draft: {
-    title: "About this first draft",
-    copy: "This is a local website draft for review. The visual profile is proposed, and images are AI concept illustrations rather than Gemu engine screenshots. Forms are inactive placeholders, and questions and asset listings are sample content. No backend, email or external services are connected.",
+  assetCart: {
+    title: "Cart — placeholder",
+    copy: "A cart would hold assets before checkout. The preview catalogue has fictional creators and placeholder prices, with no payment service, so no item is added and no transaction takes place.",
+  },
+  assetSave: {
+    title: "Saved assets — placeholder",
+    copy: "Saved collections would help you return to assets you like. Account and collection features will be added later. Nothing is saved by this placeholder.",
+  },
+  assetReviews: {
+    title: "Asset reviews",
+    copy: "The catalogue contains preview assets, with no real ratings or reviews. Verified reviews and their moderation are future features.",
+  },
+  assetSupport: {
+    title: "Asset support",
+    copy: "A real listing would provide a verified creator support destination. No creator contact or support service is available for these sample assets.",
   },
 };
 export type InfoKey = keyof typeof infoContent;
