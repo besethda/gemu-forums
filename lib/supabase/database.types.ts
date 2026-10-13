@@ -23,6 +23,7 @@ export type Database = {
           description: string
           id: number
           media: Json
+          status: string
           title: string
         }
         Insert: {
@@ -33,6 +34,7 @@ export type Database = {
           description?: string
           id?: number
           media: Json
+          status?: string
           title?: string
         }
         Update: {
@@ -43,6 +45,7 @@ export type Database = {
           description?: string
           id?: number
           media?: Json
+          status?: string
           title?: string
         }
         Relationships: [
@@ -85,16 +88,19 @@ export type Database = {
           created_at: string
           email: string | null
           id: number
+          user_id: string | null
         }
         Insert: {
           created_at?: string
           email?: string | null
           id?: number
+          user_id?: string | null
         }
         Update: {
           created_at?: string
           email?: string | null
           id?: number
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -103,7 +109,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      can_submit_asset: { Args: never; Returns: boolean }
+      email_link_signed_in_at: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never
