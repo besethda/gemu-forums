@@ -1,0 +1,26 @@
+/* Gemu proposed website foundation. Evidence and status: design-tokens.json. */
+@font-face { font-family: Inter; src: url("sources/Inter-variable.ttf") format("truetype"); font-weight: 100 900; font-style: normal; font-display: swap; }
+:root {
+  --ink: #161618; --raised: #242426; --paper: #EFE9E7; --sand: #E9E4DE;
+  --charcoal: #333333; --fog: #B7B2AF; --muted-light: #69625E;
+  --border-dark: #6D6769; --border-light: #8D827C;
+  --focus-dark: #EFE9E7; --focus-light: #333333;
+  --error: #943C36; --success: #315D48;
+  --font-display: Inter, Arial, sans-serif;
+  --font-body: Inter, Arial, sans-serif;
+  --font-utility: ui-monospace, Consolas, monospace;
+  --space-1: 4px; --space-2: 8px; --space-3: 16px; --space-4: 24px;
+  --space-5: 32px; --space-6: 48px; --space-7: 64px; --space-8: 96px;
+  --radius: 2px; --content-width: 1200px; --grid-cell: 16px;
+}
+.gemu-dark { background: var(--ink); color: var(--paper); }
+.gemu-light { background: var(--paper); color: var(--charcoal); }
+.gemu-grid { background-image: linear-gradient(#ffffff08 1px, transparent 1px), linear-gradient(90deg, #ffffff08 1px, transparent 1px); background-size: var(--grid-cell) var(--grid-cell); }
+.gemu-button { min-height: 44px; padding: 12px 20px; border: 1px solid currentColor; border-radius: var(--radius); font: 600 14px/1.25 var(--font-body); cursor: pointer; }
+.gemu-dark .gemu-button { background: var(--paper); color: var(--ink); }
+.gemu-light .gemu-button { background: var(--ink); color: var(--paper); }
+.gemu-button:focus-visible { outline: 3px solid var(--focus-light); outline-offset: 4px; }
+.gemu-dark .gemu-button:focus-visible { outline-color: var(--focus-dark); }
+.gemu-input { width: 100%; min-height: 48px; padding: 12px; border: 1px solid var(--border-light); background: #FAF7F5; color: var(--charcoal); border-radius: var(--radius); font: 400 16px/1.4 var(--font-body); }
+.gemu-input:focus-visible { outline: 2px solid var(--focus-light); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }
