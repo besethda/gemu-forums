@@ -15,6 +15,7 @@ const emptyForm = {
   gameTitle: "",
   stage: "",
   support: "",
+  pitchLink: "",
 };
 
 type FormData = typeof emptyForm;
@@ -45,6 +46,7 @@ export default function AccessForm({ initialPath = "" }: { initialPath?: string 
           ["Game title", form.gameTitle],
           ["Stage", form.stage],
           ["Support needed", form.support],
+          ["Game or pitch link", form.pitchLink || "Not added"],
         ]),
   ];
 
@@ -52,6 +54,9 @@ export default function AccessForm({ initialPath = "" }: { initialPath?: string 
     setStatus("sending");
     const teamEmail = process.env.NEXT_PUBLIC_GEMU_TEAM_EMAIL!;
     const summary = answers.map(([label, value]) => `${label}: ${value}`).join("\n");
+        const publishingNote = isEngine
+      ? ""
+      : "\n\nPublishing with Gemu is optional and separate from engine access. Submitting a game never affects your access to the engine.";
 
     try {
       await sendEmail({
@@ -66,7 +71,7 @@ export default function AccessForm({ initialPath = "" }: { initialPath?: string 
       await sendEmail({
         toEmail: form.email,
         subject: "We received your Gemu application",
-        message: `Hi ${form.name},\n\nThanks for your application. The Gemu team will review it soon and reply to this email address.\n\nYour answers:\n${summary}\n\nThe Gemu team`,
+        message: `Hi ${form.name},\n\nThanks for your application. The Gemu team will review it soon and reply to this email address.${publishingNote}\n\nYour answers:\n${summary}\n\nThe Gemu team`,
         replyTo: teamEmail,
       });
 
@@ -190,6 +195,18 @@ export default function AccessForm({ initialPath = "" }: { initialPath?: string 
             <label htmlFor="support">What support are you looking for?</label>
             <textarea id="support" rows={4} value={form.support} onChange={(e) => update("support", e.target.value)} required />
           </div>
+
+                    <div className="field field-wide">
+            <label htmlFor="pitchLink">Game or pitch link (optional)</label>
+            <input
+              id="pitchLink"
+              type="url"
+              placeholder="https://"
+              value={form.pitchLink}
+              onChange={(e) => update("pitchLink", e.target.value)}
+            />
+          </div>
+
         </div>
       )}
 
