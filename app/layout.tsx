@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
-import { SiteShell } from "@/components/site-shell";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const inter = localFont({
-  src: "./fonts/Inter-variable.ttf",
+const inter = Inter({
   variable: "--font-inter",
-  weight: "100 900",
-  display: "swap",
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -25,10 +22,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body>
-        <SiteShell>{children}</SiteShell>
-      </body>
+    <html lang="en" className={`${inter.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }
