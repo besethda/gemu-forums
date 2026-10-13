@@ -1,0 +1,66 @@
+[
+  {
+    "pair": "Body on paper",
+    "foreground": "#333333",
+    "background": "#EFE9E7",
+    "ratio": 10.52,
+    "minimum": 4.5,
+    "passed": true
+  },
+  {
+    "pair": "Secondary on paper",
+    "foreground": "#69625E",
+    "background": "#EFE9E7",
+    "ratio": 4.98,
+    "minimum": 4.5,
+    "passed": true
+  },
+  {
+    "pair": "Secondary on sand",
+    "foreground": "#69625E",
+    "background": "#E9E4DE",
+    "ratio": 4.74,
+    "minimum": 4.5,
+    "passed": true
+  },
+  {
+    "pair": "Paper on ink",
+    "foreground": "#EFE9E7",
+    "background": "#161618",
+    "ratio": 15.04,
+    "minimum": 4.5,
+    "passed": true
+  },
+  {
+    "pair": "Fog on ink",
+    "foreground": "#B7B2AF",
+    "background": "#161618",
+    "ratio": 8.61,
+    "minimum": 4.5,
+    "passed": true
+  },
+  {
+    "pair": "Light control border on paper",
+    "foreground": "#8D827C",
+    "background": "#EFE9E7",
+    "ratio": 3.11,
+    "minimum": 3,
+    "passed": true
+  },
+  {
+    "pair": "Light control border on input",
+    "foreground": "#8D827C",
+    "background": "#FAF7F5",
+    "ratio": 3.51,
+    "minimum": 3,
+    "passed": true
+  },
+  {
+    "pair": "Dark control border",
+    "foreground": "#6D6769",
+    "background": "#161618",
+    "ratio": 3.27,
+    "minimum": 3,
+    "passed": true
+  }
+]

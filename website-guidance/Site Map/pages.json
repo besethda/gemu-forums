@@ -1,0 +1,71 @@
+{
+  "status": "Simplified team architecture v2; three main pages; client priorities pending",
+  "areas": [
+    {
+      "name": "Home",
+      "proposed_route": "/",
+      "children": [
+        {
+          "name": "Engine & showcase",
+          "purpose": "Engine introduction, capabilities and approved project media on the homepage."
+        },
+        {
+          "name": "Publishing & Bootcamp",
+          "purpose": "Short homepage sections with pitch and interest actions."
+        },
+        {
+          "name": "Investors & licensing",
+          "purpose": "Partner information as a homepage section."
+        },
+        {
+          "name": "Application dialogs",
+          "purpose": "Request access, Submit a game and enquiries. Each has its own intent and confirmation state."
+        }
+      ]
+    },
+    {
+      "name": "Community",
+      "proposed_route": "/community",
+      "children": [
+        {
+          "name": "Searchable questions",
+          "purpose": "Search and filter developer discussions."
+        },
+        {
+          "name": "Discussion panel",
+          "purpose": "Open a topic and its replies within this page."
+        },
+        {
+          "name": "Ask / reply dialog",
+          "purpose": "Create a question or reply without a separate page."
+        },
+        {
+          "name": "Discord connection",
+          "purpose": "The same discussion connects to a Discord thread through the proposed bot and backend."
+        }
+      ]
+    },
+    {
+      "name": "Assets",
+      "proposed_route": "/assets",
+      "children": [
+        {
+          "name": "Browse & search",
+          "purpose": "Explore voxel models, environments and tools."
+        },
+        {
+          "name": "Asset detail panel",
+          "purpose": "Preview, compatibility, creator and license within this page."
+        },
+        {
+          "name": "Get asset",
+          "purpose": "Show the acquisition step as a dialog or linked service."
+        },
+        {
+          "name": "Creator submission dialog",
+          "purpose": "Share or sell work through a form; review and publication remain a separate flow."
+        }
+      ]
+    }
+  ]
+}
