@@ -2,7 +2,7 @@
 
 Frontend draft on `website-first-draft`, built with the existing Next.js 16.4 / React 19.3 project. Home (`/`), Community (`/community`) and Assets (`/assets`) share responsive navigation, the supplied modular wordmark, local Inter and the proposed dark-grid / warm-surface graphic profile.
 
-The user's follow-up scope supersedes the original handoff's interactive-form and Discord requirements: forms are **inactive visual placeholders**, Community is a **standalone sample forum**, and there is **no backend, email, posting, Discord bridge, payment, download or external submission**. Search, filters and empty states work locally. Community keeps discussion details inline; Assets uses a catalogue and individual `/assets/[assetId]` detail pages. Asset galleries, information tabs and policy accordions work locally. No commits, pushes, deployment or merge were requested.
+The user's follow-up scope supersedes the original handoff's interactive-form and Discord requirements: forms are **inactive visual placeholders**, Community is a **standalone forum preview with fictional conversations**, and there is **no backend, email, posting, Discord bridge, payment, download or external submission**. Search, filters and empty states work locally. Community opens discussions in a sliding drawer from the screen’s right edge; Assets uses a catalogue and individual `/assets/[assetId]` detail pages. Asset galleries, information tabs and policy accordions work locally. No commits, pushes, deployment or merge were requested.
 
 ## Local preview
 

@@ -46,7 +46,7 @@ async function fit(label) {
 }
 async function placeholder(button, title, screenshot) {
   await button.click();
-  const dialog = page.getByRole("dialog");
+  const dialog = page.locator(".preview-dialog");
   await dialog.waitFor({ state: "visible" });
   assert.equal(await dialog.getByRole("heading").textContent(), title);
   assert.equal(await dialog.locator("form").count(), 0);
@@ -193,20 +193,23 @@ try {
     await page.locator("#discussion-title").textContent(),
     /requesting engine access/,
   );
+  await page
+    .getByRole("button", { name: "Close discussion", exact: true })
+    .click();
   await page.getByLabel("Search questions").fill("MULTIPLAYER");
-  assert.equal(await page.locator(".question-card").count(), 1);
+  assert.equal(await page.locator(".discussion-card").count(), 3);
   await page.getByLabel("Topic", { exact: true }).selectOption("Assets");
-  assert.equal(await page.locator(".question-card").count(), 0);
+  assert.equal(await page.locator(".discussion-card").count(), 0);
   assert.equal(
     await page.locator("#discussion-panel").getByRole("button").count(),
     0,
   );
   await page.getByRole("button", { name: "Clear filters" }).click();
-  assert.equal(await page.locator(".question-card").count(), 3);
-  await page.locator(".question-card").nth(1).click();
+  assert.equal(await page.locator(".discussion-card").count(), 8);
+  await page.locator(".discussion-card").nth(1).click();
   assert.match(
     await page.locator("#discussion-title").textContent(),
-    /voxel model/,
+    /voxel asset/,
   );
   assert.ok(
     await page
@@ -214,17 +217,22 @@ try {
       .evaluate((node) => document.activeElement === node),
   );
   await placeholder(
-    page.getByRole("button", { name: "Reply on website" }),
+    page.getByRole("button", { name: "Reply", exact: true }),
     "Reply on website",
   );
+  await page
+    .getByRole("button", { name: "Close discussion", exact: true })
+    .click();
   await placeholder(
-    page.locator(".page-intro").getByRole("button", { name: "Ask a question" }),
+    page
+      .locator(".market-intro")
+      .getByRole("button", { name: "Ask a question" }),
     "Ask a question",
   );
   await page
     .getByLabel("Search questions")
     .fill('<img src=x onerror="alert(1)">');
-  assert.equal(await page.locator(".question-card").count(), 0);
+  assert.equal(await page.locator(".discussion-card").count(), 0);
   await page.screenshot({
     path: path.join(output, "screenshots", "community-empty-1440.png"),
     fullPage: true,
@@ -342,7 +350,8 @@ try {
     await page.waitForURL("**/assets/robot");
     await fit(`Asset detail at ${width}px`);
     await visit("/community");
-    await page.getByRole("button", { name: "Reply on website" }).click();
+    await page.locator(".discussion-card").first().click();
+    await page.getByRole("button", { name: "Reply", exact: true }).click();
     await fit(`Reply placeholder at ${width}px`);
     await page.keyboard.press("Escape");
   }
