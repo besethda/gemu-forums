@@ -158,7 +158,12 @@ export const flows = {
     intro:
       "Describe what you are trying to do and what you have already tried.",
     fields: [
-      { name: "name", label: "Display name", required: true },
+            {
+        name: "email",
+        label: "Email me when someone answers (optional)",
+        type: "email",
+      },
+
       { name: "title", label: "Question title", required: true },
       {
         name: "topic",
