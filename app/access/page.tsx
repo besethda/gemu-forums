@@ -7,11 +7,13 @@ export const metadata: Metadata = {
 
 export default function AccessPage() {
   return (
-    <main>
+    <div className="container section">
+      <p className="eyebrow">Gemu Engine</p>
       <h1>Apply to Gemu</h1>
+      <p className="lead">
+        Request engine access or submit your game for publishing. It takes about two minutes.
+      </p>
       <AccessForm />
-    </main>
+    </div>
   );
 }
-
-
