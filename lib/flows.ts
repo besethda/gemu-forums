@@ -207,7 +207,7 @@ export const infoContent = {
   },
   updates: {
     title: "News and updates",
-    copy: "Engine news, studio stories and Bootcamp updates would appear here when verified content is available. Newsletter subscriptions are not connected in this draft.",
+    copy: "Pick the topics you care about and we will only send you those: engine news, studio stories, Bootcamp intakes and more.",
   },
   acquire: {
     title: "Get asset — preview",
