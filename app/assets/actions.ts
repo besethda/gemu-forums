@@ -140,6 +140,7 @@ export async function createAsset(
     description.length > 2000 ||
     !Number.isInteger(input.categoryId) ||
     !ownPath(input.modelPath) ||
+    !input.modelPath.toLowerCase().endsWith(".zip") ||
     input.media.length === 0 ||
     !input.media.every(
       (m) => ownPath(m.path) && (m.type === "image" || m.type === "video"),

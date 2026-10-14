@@ -13,11 +13,8 @@ import {
 import { createAsset, type MediaRef } from "@/app/assets/actions";
 import { createClient } from "@/lib/supabase/client";
 
-const MODEL_EXTENSIONS = [".fbx", ".glb"];
-const MODEL_CONTENT_TYPES: Record<string, string> = {
-  ".glb": "model/gltf-binary",
-  ".fbx": "application/octet-stream",
-};
+// The asset is uploaded as one zip: the .fbx/.glb model plus its textures.
+const MODEL_EXTENSIONS = [".zip"];
 const TITLE_MAX = 80;
 const DESCRIPTION_MAX = 2000;
 
@@ -32,7 +29,7 @@ const FIELD_LABELS: Record<Field, string> = {
   title: "Asset name",
   category: "Category",
   description: "Description",
-  model: "3D model",
+  model: "Asset files",
   media: "Photos & videos",
 };
 const FIELDS = Object.keys(FIELD_LABELS) as Field[];
@@ -94,7 +91,7 @@ function validate(
   if (!categories.some((c) => String(c.id) === values.category))
     errors.category = "Choose a category.";
   if (!values.description.trim()) errors.description = "Describe your asset.";
-  if (!values.model) errors.model = "Upload the asset as an .fbx or .glb file.";
+  if (!values.model) errors.model = "Upload your asset as a .zip file.";
   if (values.media.length === 0)
     errors.media = "Add at least one photo or video.";
   return errors;
@@ -179,7 +176,7 @@ export function AssetSubmissionForm({
     if (!isModelFile(file)) {
       setRejected((r) => ({
         ...r,
-        model: `${file.name} isn't an .fbx or .glb file.`,
+        model: `${file.name} isn't a .zip file. Zip your model and textures first.`,
       }));
       return;
     }
@@ -239,7 +236,7 @@ export function AssetSubmissionForm({
       const modelUpload = await supabase.storage
         .from("asset-files")
         .upload(modelPath, model, {
-          contentType: MODEL_CONTENT_TYPES[extensionOf(model.name)],
+          contentType: "application/zip",
         });
       if (modelUpload.error) throw modelUpload.error;
 
@@ -402,7 +399,8 @@ export function AssetSubmissionForm({
             {FIELD_LABELS.model}
           </legend>
           <p id={`${ids.model}-hint`} className="asset-form-hint">
-            One .fbx or .glb file, up to 50 MB.
+            One .zip containing your .fbx or .glb model and its textures, up
+            to 50 MB.
           </p>
           {model && (
             <div className="asset-form-file">
@@ -449,8 +447,8 @@ export function AssetSubmissionForm({
             error={errorFor("model")}
             onFiles={addModel}
             hidden={!!model}
-            prompt="Drop your model here or choose a file"
-            detail=".fbx or .glb"
+            prompt="Drop your .zip here or choose a file"
+            detail=".zip with your model and textures"
           />
           <FieldError id={`${ids.model}-error`} message={errorFor("model")} />
         </fieldset>
