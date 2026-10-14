@@ -178,7 +178,7 @@ export type FlowKey = keyof typeof flows;
 export const infoContent = {
   docs: {
     title: "Documentation",
-    copy: "Getting-started guides and the technical reference would live here. A verified documentation destination and its access rules have not been supplied yet. You can explore the sample developer questions in Community.",
+    copy: "Getting-started guides and the technical reference will live here once Gemu shares them. In the meantime, ask in Community. Your question goes straight to the Gemu Discord.",
   },
   privacy: {
     title: "Privacy and terms — preview",
