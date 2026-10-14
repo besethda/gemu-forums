@@ -2009,7 +2009,6 @@ body:has(.asset-lightbox[open]) {
   color: var(--muted);
   opacity: 1;
   resize: none;
-  cursor: not-allowed;
 }
 .thread-composer > div {
   display: flex;
