@@ -13,12 +13,15 @@
 # testing
 /coverage
 
-# Local review output: screenshots, reports, notes and generated image prompts
+# Local verification scripts, screenshots, reports, notes and image prompts
 /review/
 
 # Design handoff prompt references are kept locally, not versioned
 /website-guidance/Gemu Graphic Profile/AI Image Prompts.md
 /website-guidance/Homepage Wireframe/IMAGE PROMPTS.md
+
+# Original PNG artwork stays local; the site uses public/gemu WebPs
+/website-guidance/Gemu Graphic Profile/sources/*.png
 
 # next.js
 /.next/

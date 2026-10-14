@@ -15,7 +15,7 @@ export function AssetCard({ asset }: { asset: Asset }) {
             src={`/gemu/${asset.image}`}
             alt={asset.alt}
             {...assetImageSize(asset.image)}
-            sizes="(max-width: 359px) 100vw, (max-width: 600px) 50vw, (max-width: 1000px) 33vw, 20vw"
+            sizes="(max-width: 359px) calc(100vw - 32px), (max-width: 500px) calc(50vw - 24px), (max-width: 600px) calc(50vw - 32px), (max-width: 800px) calc(33.33vw - 27px), (max-width: 1000px) calc(33.33vw - 32px), (max-width: 1100px) calc(20vw - 26px), (max-width: 1296px) calc(20vw - 32px), 227px"
           />
         </div>
         <div className="market-card-copy">

@@ -19,13 +19,13 @@ export function AssetDetail({ asset }: { asset: Asset }) {
   const lightbox = useRef<HTMLDialogElement>(null);
   const lightboxClose = useRef<HTMLButtonElement>(null);
   const contextImage =
-    asset.image === "voxel-world.png" ? "voxel-cabin.png" : "voxel-world.png";
+    asset.image === "voxel-world.webp" ? "voxel-cabin.webp" : "voxel-world.webp";
   const slides = [
     { image: asset.image, alt: asset.alt, label: "Asset concept" },
     {
       image: contextImage,
       alt:
-        contextImage === "voxel-world.png"
+        contextImage === "voxel-world.webp"
           ? "Related voxel forest and riverside world concept"
           : "Related modular voxel cabin concept",
       label: "Related world concept",
@@ -52,7 +52,7 @@ export function AssetDetail({ asset }: { asset: Asset }) {
                 src={`/gemu/${current.image}`}
                 alt={current.alt}
                 {...assetImageSize(current.image)}
-                sizes="(max-width: 800px) 100vw, 65vw"
+                sizes="(max-width: 500px) calc(100vw - 32px), (max-width: 800px) calc(100vw - 48px), (max-width: 1000px) calc(58.33vw - 52px), (max-width: 1100px) calc(63.64vw - 61px), (max-width: 1296px) calc(63.64vw - 82px), 743px"
                 preload
               />
               <button
@@ -356,7 +356,7 @@ export function AssetDetail({ asset }: { asset: Asset }) {
           src={`/gemu/${current.image}`}
           alt={current.alt}
           {...assetImageSize(current.image)}
-          sizes="90vw"
+          sizes="(max-width: 600px) calc(100vw - 64px), (max-width: 1232px) calc(100vw - 80px), 1150px"
         />
         <p className="small">{current.label} · AI concept illustration</p>
       </dialog>

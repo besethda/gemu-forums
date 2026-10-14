@@ -389,6 +389,50 @@ h3 + p {
 .capability-note {
   margin-top: 16px;
 }
+.engine-demo {
+  margin-top: 48px;
+}
+.section.engine-section {
+  padding-bottom: 0;
+}
+.engine-demo h3 {
+  font-size: clamp(22px, 3vw, 28px);
+  margin-bottom: 24px;
+}
+.engine-demo-frame {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  background: var(--ink);
+}
+.engine-demo-frame video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1280 / 772;
+}
+.engine-demo-control {
+  position: absolute;
+  right: clamp(12px, 2vw, 24px);
+  bottom: clamp(12px, 2vw, 24px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 44px;
+  min-width: 140px;
+  padding: 12px 16px;
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius);
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 13px;
+  font-weight: 600;
+}
+.engine-demo-control:hover {
+  background: var(--raised);
+}
 .resource-strip {
   display: flex;
   align-items: center;
@@ -433,10 +477,6 @@ h3 + p {
   object-fit: cover;
   border: 1px solid var(--border-light);
 }
-.showcase-grid figure:last-child > img {
-  object-fit: contain;
-  background: var(--paper);
-}
 .showcase-grid figcaption {
   padding-top: 24px;
 }
@@ -480,9 +520,10 @@ h3 + p {
   color: var(--muted);
 }
 .bootcamp-section figure > img {
+  width: 100%;
+  height: auto;
   border: 1px solid var(--border-light);
-  aspect-ratio: 1.4;
-  object-fit: contain;
+  aspect-ratio: auto;
 }
 .partner-cards article {
   padding: 24px 0;
@@ -608,14 +649,6 @@ h3 + p {
   line-height: 1.5;
   font-weight: 500;
 }
-.filter-row {
-  display: grid;
-  grid-template-columns: 1fr 240px;
-  gap: 24px;
-  padding: 24px;
-  background: var(--sand);
-  border: 1px solid var(--border-light);
-}
 label {
   display: block;
   font-size: 12px;
@@ -652,113 +685,6 @@ select:user-invalid {
   font-size: 12px;
   color: var(--muted);
   padding: 24px 0;
-}
-.forum-layout {
-  display: grid;
-  grid-template-columns: 1fr 1.15fr;
-  gap: 32px;
-  align-items: start;
-}
-.question-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.question-card {
-  padding: 24px;
-  text-align: left;
-  width: 100%;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius);
-  background: transparent;
-  transition: background 0.15s;
-}
-.question-card[aria-pressed="true"] {
-  background: var(--sand);
-  border-color: var(--charcoal);
-  box-shadow: inset 4px 0 var(--charcoal);
-}
-.question-card:hover {
-  background: var(--sand);
-}
-.card-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-.question-card h3 {
-  font-size: 20px;
-  line-height: 1.3;
-}
-.question-card > p {
-  font-size: 13px;
-  color: var(--muted);
-  margin-top: 12px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.card-bottom {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  margin-top: 24px;
-  font-size: 11px;
-  color: var(--muted);
-}
-.detail-panel {
-  padding: 32px;
-  border: 1px solid var(--border-light);
-  background: var(--sand);
-  border-radius: var(--radius);
-  scroll-margin-top: 24px;
-}
-.detail-panel h2 {
-  font-size: 28px;
-  line-height: 1.2;
-}
-.detail-meta {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 24px;
-}
-.messages {
-  margin-top: 24px;
-}
-.message {
-  padding: 24px 0;
-  border-top: 1px solid var(--border-light);
-}
-.message-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: 12px;
-}
-.message > p {
-  font-size: 14px;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  margin-top: 16px;
-}
-.panel-note {
-  margin-top: 24px;
-  padding-top: 24px;
-  border-top: 1px solid var(--border-light);
-}
-.community-explainer {
-  padding: 64px 0;
-  background: var(--sand);
-  border-top: 1px solid var(--border-light);
-}
-.community-explainer .text-button {
-  margin-top: 16px;
 }
 .empty-state {
   padding: 32px;
@@ -1047,18 +973,6 @@ select:user-invalid {
   .intro-visual > img {
     aspect-ratio: 2;
   }
-  .filter-row {
-    grid-template-columns: 1fr 200px;
-    padding: 16px;
-    gap: 16px;
-  }
-  .forum-layout,
-  .detail-panel {
-    padding: 24px;
-  }
-  .community-explainer {
-    padding-block: 48px;
-  }
   .browse-section .section-heading h2 {
     font-size: 30px;
   }
@@ -1103,27 +1017,6 @@ select:user-invalid {
     padding-block: 48px;
   }
   .closing .actions {
-    flex-direction: column;
-  }
-  .filter-row {
-    grid-template-columns: 1fr;
-  }
-  .forum-layout {
-    gap: 24px;
-  }
-  .question-card {
-    padding: 20px;
-  }
-  .question-card h3 {
-    font-size: 20px;
-  }
-  .detail-panel {
-    padding: 20px;
-  }
-  .detail-panel h2 {
-    font-size: 24px;
-  }
-  .detail-panel .actions {
     flex-direction: column;
   }
   .page-intro h1 {
@@ -1896,6 +1789,374 @@ body:has(.asset-lightbox[open]) {
   }
   .product-tabs button {
     padding-inline: 4px;
+  }
+}
+/* Community question grid and threaded conversation panel. */
+.community-main {
+  padding-block: 32px 64px;
+}
+.community-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 240px;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.community-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.question-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+.question-grid > .empty-state {
+  grid-column: 1/-1;
+}
+.discussion-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 24px;
+  text-align: left;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  background: var(--paper);
+  transition: background 0.15s;
+}
+.discussion-card:hover {
+  background: var(--sand);
+}
+.discussion-card[aria-pressed="true"] {
+  background: var(--sand);
+  border-color: var(--charcoal);
+  box-shadow: inset 3px 0 var(--charcoal);
+}
+.discussion-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.discussion-card h3 {
+  font-size: 20px;
+  line-height: 1.3;
+  min-height: 2.6em;
+  margin-top: 16px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.discussion-card > p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin-top: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 3.2em;
+}
+.discussion-card-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+.chat-avatar {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--raised);
+  color: var(--paper);
+  border-radius: var(--radius);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.discussion-card-author strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.discussion-card-author time {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.discussion-card-arrow {
+  margin-left: auto;
+  font-size: 18px;
+}
+.thread-header {
+  padding: 16px 24px 24px;
+  flex-shrink: 0;
+}
+.thread-heading-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+.thread-close {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: none;
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius);
+  font-size: 24px;
+  line-height: 1;
+}
+.thread-header h2 {
+  flex: 1;
+  min-width: 0;
+  font-size: 22px;
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+  margin: 0;
+}
+.thread-topic {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 20px;
+  font-size: 10px;
+  color: var(--fog);
+}
+.thread-topic > span:first-child {
+  border: 1px solid var(--border-dark);
+  padding: 4px 8px;
+  border-radius: var(--radius);
+}
+.thread-messages {
+  flex: 1;
+  min-height: 120px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 24px;
+  outline-offset: -4px;
+}
+.chat-message {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 12px;
+}
+.chat-message + .chat-message {
+  margin-top: 24px;
+}
+.chat-message .chat-avatar {
+  width: 32px;
+  height: 32px;
+  font-size: 10px;
+}
+.chat-message-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.chat-message-meta strong {
+  font-weight: 600;
+}
+.chat-message-meta time {
+  font-size: 10px;
+  color: var(--muted);
+  margin-left: auto;
+}
+.thread-author-label {
+  font-size: 9px;
+  padding: 1px 4px;
+  border: 1px solid var(--border-light);
+  background: var(--paper);
+  border-radius: var(--radius);
+}
+.chat-message p {
+  font-size: 13px;
+  line-height: 1.7;
+  margin-top: 8px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.thread-composer {
+  padding: 16px;
+  border-top: 1px solid var(--border-light);
+  flex-shrink: 0;
+}
+.thread-composer textarea {
+  min-height: 64px;
+  padding: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  background: var(--paper);
+  color: var(--muted);
+  opacity: 1;
+  resize: none;
+  cursor: not-allowed;
+}
+.thread-composer > div {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+}
+.thread-composer .button {
+  min-height: 40px;
+  padding: 10px 16px;
+  font-size: 12px;
+  gap: 8px;
+}
+.thread-drawer {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  inset: 0 calc(-1 * var(--thread-gutter, 0px)) 0 auto;
+  margin: 0;
+  width: min(440px, 100vw);
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  padding: 0;
+  border: 0;
+  border-left: 1px solid var(--border-light);
+  border-radius: 0;
+  background: var(--sand);
+  color: var(--charcoal);
+  overflow: hidden;
+  box-shadow: -16px 0 40px #0003;
+  animation: thread-drawer-in 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.thread-drawer:not([open]) {
+  display: none;
+}
+.thread-drawer::backdrop {
+  background: #0009;
+  animation: thread-backdrop-in 200ms ease both;
+}
+body:has(.thread-drawer[open]) {
+  overflow: hidden;
+}
+@media (max-width: 1100px) {
+  .question-grid {
+    gap: 16px;
+  }
+  .discussion-card {
+    padding: 20px;
+  }
+  .discussion-card h3 {
+    font-size: 18px;
+  }
+  .thread-header,
+  .thread-messages {
+    padding-inline: 20px;
+  }
+}
+@media (max-width: 900px) {
+}
+@media (max-width: 600px) {
+  .community-toolbar {
+    grid-template-columns: 1fr;
+  }
+  .question-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .discussion-card h3 {
+    font-size: 20px;
+    min-height: 0;
+  }
+  .discussion-card > p {
+    min-height: 0;
+  }
+  .community-main {
+    padding-bottom: 48px;
+  }
+  .thread-header h2 {
+    font-size: 21px;
+  }
+  .thread-messages {
+    padding: 20px;
+  }
+  .thread-composer {
+    padding: 16px;
+  }
+  .thread-header {
+    padding: 12px 20px 20px;
+  }
+  .thread-topic {
+    margin-top: 16px;
+  }
+  .chat-message {
+    gap: 10px;
+  }
+}
+
+/* Keep the underlying catalogue width stable while an overlay locks scrolling. */
+html {
+  scrollbar-gutter: stable;
+}
+
+.thread-drawer.is-closing {
+  animation: thread-drawer-out 200ms cubic-bezier(0.4, 0, 1, 1) both;
+  pointer-events: none;
+}
+.thread-drawer.is-closing::backdrop {
+  animation: thread-backdrop-out 200ms ease both;
+}
+@keyframes thread-drawer-in {
+  from {
+    transform: translateX(calc(100% + 16px));
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes thread-drawer-out {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(100% + 16px));
+  }
+}
+@keyframes thread-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes thread-backdrop-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .thread-drawer,
+  .thread-drawer::backdrop {
+    animation: none !important;
   }
 }
 

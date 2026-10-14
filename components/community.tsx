@@ -1,81 +1,76 @@
 "use client";
-import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Action } from "./site-shell";
-import { sampleQuestions, topics } from "@/lib/demo-data";
+import { communityQuestions, topics, type Question } from "@/lib/demo-data";
+
+function initials(name: string) {
+  return name
+    .split(" ")
+    .map((word) => word[0])
+    .slice(0, 2)
+    .join("");
+}
 
 export function Community() {
   const params = useSearchParams();
-  const questions = sampleQuestions;
   const [search, setSearch] = useState("");
   const [topic, setTopic] = useState("all");
-  const [selected, setSelected] = useState(
-    params.get("topic") ?? sampleQuestions[0].id,
+  const [selected, setSelected] = useState<string | null>(() =>
+    communityQuestions.some((q) => q.id === params.get("topic"))
+      ? params.get("topic")
+      : null,
   );
+  const cards = useRef<Record<string, HTMLButtonElement | null>>({});
   const heading = useRef<HTMLHeadingElement>(null);
   const query = search.trim().toLowerCase();
-  const filtered = questions.filter(
+  const filtered = communityQuestions.filter(
     (q) =>
       (topic === "all" || q.topic === topic) &&
-      `${q.title} ${q.body} ${q.topic} ${q.replies.map((r) => r.body).join(" ")}`
+      `${q.title} ${q.body} ${q.topic} ${q.name} ${q.replies.map((r) => `${r.name} ${r.body}`).join(" ")}`
         .toLowerCase()
         .includes(query),
   );
-  const discussion = filtered.find((q) => q.id === selected) ?? filtered[0];
+  const discussion = filtered.find((q) => q.id === selected);
+  function closeThread() {
+    const card = selected ? cards.current[selected] : null;
+    setSelected(null);
+    requestAnimationFrame(() => card?.focus());
+  }
   function reset() {
     setSearch("");
     setTopic("all");
+    setSelected(null);
   }
   return (
     <>
-      <section className="page-intro dark grid-surface">
-        <div className="container page-intro-layout">
+      <section className="market-intro dark">
+        <div className="container market-intro-inner">
           <div>
-            <p className="eyebrow">Developer community</p>
-            <h1>
-              Find an answer.
-              <br />
-              Keep building.
-            </h1>
-            <p className="lead">
-              A place for voxel questions, shared knowledge and the people
-              making games.
-            </p>
-            <Action flow="question">
-              Ask a question <span aria-hidden="true">＋</span>
-            </Action>
+            <h1>Community</h1>
+            <p>Ask questions and share ideas.</p>
           </div>
-          <figure className="intro-visual">
-            <Image
-              src="/gemu/voxel-world.png"
-              alt="Voxel environment concept with forest and a riverside outpost"
-              width={1672}
-              height={941}
-              sizes="(max-width: 800px) 100vw, 35vw"
-              preload
-            />
-            <figcaption>AI concept illustration</figcaption>
-          </figure>
+          <Action flow="question" className="button secondary">
+            Ask a question <span aria-hidden="true">＋</span>
+          </Action>
         </div>
       </section>
       <section
-        className="section container browse-section"
+        className="container community-main"
         aria-labelledby="questions-heading"
       >
-        <div className="section-heading">
-          <h2 id="questions-heading">Developer questions</h2>
-          <span className="tag">Sample discussions · Forum preview</span>
-        </div>
-        <div className="filter-row">
-          <div className="search-field">
+        <div className="community-toolbar">
+          <div>
             <label htmlFor="question-search">Search questions</label>
             <input
               id="question-search"
               type="search"
-              placeholder="Try multiplayer, assets or access"
+              placeholder="Search questions, topics or people"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(event) => {
+                setSearch(event.target.value);
+                setSelected(null);
+              }}
             />
           </div>
           <div>
@@ -83,7 +78,10 @@ export function Community() {
             <select
               id="topic-filter"
               value={topic}
-              onChange={(e) => setTopic(e.target.value)}
+              onChange={(event) => {
+                setTopic(event.target.value);
+                setSelected(null);
+              }}
             >
               <option value="all">All topics</option>
               {topics.map((t) => (
@@ -92,125 +90,232 @@ export function Community() {
             </select>
           </div>
         </div>
-        <p className="result-count" role="status">
+        <div className="sr-only" role="status">
           {filtered.length} discussion{filtered.length !== 1 && "s"}
-          {query || topic !== "all" ? " matching your filters" : " to explore"}
-        </p>
-        <div className="forum-layout">
-          <div className="question-list">
+          {query || topic !== "all" ? " found" : " to explore"}
+        </div>
+        <div className="collection-heading">
+          <h2 id="questions-heading">Developer questions</h2>
+          {(query || topic !== "all") && (
+            <button className="text-button" onClick={reset}>
+              Reset filters
+            </button>
+          )}
+        </div>
+        <div className="community-layout">
+          <div className="question-grid">
             {filtered.map((q) => (
               <button
                 key={q.id}
-                className="question-card"
-                aria-pressed={discussion?.id === q.id}
-                aria-controls="discussion-panel"
-                onClick={() => {
-                  setSelected(q.id);
-                  heading.current?.focus();
+                ref={(node) => {
+                  cards.current[q.id] = node;
                 }}
+                className="discussion-card"
+                aria-pressed={selected === q.id}
+                aria-controls={discussion ? "discussion-panel" : undefined}
+                aria-label={`Open discussion: ${q.title}`}
+                onClick={() => setSelected(q.id)}
               >
-                <div className="card-meta">
+                <div className="discussion-card-meta">
                   <span className="tag">{q.topic}</span>
-                  <span className="small">{q.origin}</span>
+                  <span>
+                    {q.replies.length} repl
+                    {q.replies.length === 1 ? "y" : "ies"}
+                  </span>
                 </div>
                 <h3>{q.title}</h3>
                 <p>{q.body}</p>
-                <div className="card-bottom">
-                  <span>
-                    {q.replies.length} repl
-                    {q.replies.length === 1 ? "y" : "ies"} · Sample discussion
+                <div className="discussion-card-author">
+                  <span className="chat-avatar" aria-hidden="true">
+                    {initials(q.name)}
                   </span>
-                  <span aria-hidden="true">→</span>
+                  <span>
+                    <strong>{q.name}</strong>
+                    <time dateTime={q.time}>{q.time}</time>
+                  </span>
+                  <span className="discussion-card-arrow" aria-hidden="true">
+                    ↗
+                  </span>
                 </div>
               </button>
             ))}
             {!filtered.length && (
               <div className="empty-state">
                 <h3>No matching questions.</h3>
-                <p>
-                  Try another search or topic, or view the question form
-                  placeholder.
-                </p>
-                <div className="actions">
-                  <button className="button" onClick={reset}>
-                    Clear filters
-                  </button>
-                  <Action flow="question" className="button secondary">
-                    Ask a question
-                  </Action>
-                </div>
+                <p>Try another search or topic to find a discussion.</p>
+                <button className="button" onClick={reset}>
+                  Clear filters
+                </button>
               </div>
             )}
           </div>
-          <section
-            className="detail-panel"
-            id="discussion-panel"
-            aria-labelledby="discussion-title"
-          >
-            <p className="eyebrow">Discussion</p>
-            <h2 id="discussion-title" ref={heading} tabIndex={-1}>
-              {discussion?.title ?? "Find a discussion"}
-            </h2>
-            {discussion ? (
-              <>
-                <div className="detail-meta">
-                  <span className="tag">{discussion.topic}</span>
-                  <span className="small">Sample content</span>
-                </div>
-                <div className="messages">
-                  {[discussion, ...discussion.replies].map((message, i) => (
-                    <article className="message" key={i}>
-                      <div className="message-meta">
-                        <strong>{message.name}</strong>
-                        <span className="origin">{message.origin}</span>
-                      </div>
-                      <p>{message.body}</p>
-                    </article>
-                  ))}
-                </div>
-                <div className="actions">
-                  <Action flow="reply">
-                    Reply on website <span aria-hidden="true">↗</span>
-                  </Action>
-                </div>
-                <p className="small panel-note">
-                  Illustrative discussion only. Ask and Reply open form
-                  placeholders; posting will be added later.
-                </p>
-              </>
-            ) : (
-              <p>
-                Choose another search or topic to see the sample conversations.
-              </p>
-            )}
-          </section>
         </div>
-      </section>
-      <section className="community-explainer">
-        <div className="container two-column">
-          <div>
-            <p className="eyebrow">A place to keep building</p>
-            <h2>
-              Share a question.
-              <br />
-              Find a starting point.
-            </h2>
-          </div>
-          <div>
-            <p>
-              Browse questions about getting started, multiplayer and voxel
-              assets. Open a discussion to see its sample replies.
-            </p>
-            <p className="small">
-              This first draft is a forum preview. Accounts, posting and
-              moderation will be added later.
-            </p>
-            <Action flow="question" className="text-button">
-              View question placeholder <span aria-hidden="true">↗</span>
-            </Action>
-          </div>
-        </div>
+        {discussion && (
+          <ThreadDrawer
+            key={discussion.id}
+            discussion={discussion}
+            onClose={closeThread}
+            heading={heading}
+          />
+        )}
       </section>
     </>
+  );
+}
+
+type ThreadProps = {
+  discussion: Question;
+  onClose: () => void;
+  heading: React.RefObject<HTMLHeadingElement | null>;
+};
+function ThreadContent({ discussion, onClose, heading }: ThreadProps) {
+  return (
+    <>
+      <header className="thread-header dark">
+        <div className="thread-heading-row">
+          <h2 id="discussion-title" ref={heading} tabIndex={-1}>
+            {discussion.title}
+          </h2>
+          <button
+            className="thread-close"
+            aria-label="Close discussion"
+            onClick={onClose}
+          >
+            ×
+          </button>
+        </div>
+        <div className="thread-topic">
+          <span>{discussion.topic}</span>
+          <span>
+            {discussion.replies.length} repl
+            {discussion.replies.length === 1 ? "y" : "ies"}
+          </span>
+        </div>
+      </header>
+      <div
+        className="thread-messages"
+        role="region"
+        aria-label="Discussion messages"
+        tabIndex={0}
+      >
+        {[discussion, ...discussion.replies].map((message, index) => (
+          <article
+            className="chat-message"
+            key={`${message.name}-${message.time}`}
+          >
+            <span className="chat-avatar" aria-hidden="true">
+              {initials(message.name)}
+            </span>
+            <div>
+              <div className="chat-message-meta">
+                <strong>{message.name}</strong>
+                {index === 0 && (
+                  <span className="thread-author-label">Author</span>
+                )}
+                <time dateTime={message.time}>{message.time}</time>
+              </div>
+              <p>{message.body}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+      <div className="thread-composer">
+        <label className="sr-only" htmlFor="thread-reply">
+          Write a reply
+        </label>
+        <textarea
+          id="thread-reply"
+          disabled
+          rows={2}
+          placeholder="Reply to this discussion…"
+        />
+        <div>
+          <Action flow="reply">
+            Reply <span aria-hidden="true">↗</span>
+          </Action>
+        </div>
+      </div>
+    </>
+  );
+}
+function ThreadDrawer(props: ThreadProps) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  const closingRef = useRef(false);
+  const [closing, setClosing] = useState(false);
+  useEffect(() => {
+    const element = dialog.current!;
+    function matchScreenEdge() {
+      const gutter = window.innerWidth - document.documentElement.clientWidth;
+      element.style.setProperty("--thread-gutter", `${gutter}px`);
+    }
+    matchScreenEdge();
+    element.showModal();
+    props.heading.current?.focus({ preventScroll: true });
+    window.addEventListener("resize", matchScreenEdge);
+    return () => {
+      window.removeEventListener("resize", matchScreenEdge);
+      element.close();
+    };
+  }, [props.heading]);
+  function requestClose() {
+    if (closingRef.current) return;
+    closingRef.current = true;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+      props.onClose();
+    else setClosing(true);
+  }
+  return (
+    <dialog
+      ref={dialog}
+      className={`thread-drawer${closing ? " is-closing" : ""}`}
+      onAnimationEnd={(event) => {
+        if (
+          event.target === event.currentTarget &&
+          event.animationName === "thread-drawer-out"
+        )
+          props.onClose();
+      }}
+      id="discussion-panel"
+      aria-labelledby="discussion-title"
+      onCancel={(event) => {
+        event.preventDefault();
+        requestClose();
+      }}
+      onKeyDown={(event) => {
+        if (event.key !== "Tab") return;
+        const controls = Array.from(
+          event.currentTarget.querySelectorAll<HTMLElement>(
+            'button:enabled, [tabindex="0"]',
+          ),
+        );
+        const first = controls[0],
+          last = controls[controls.length - 1];
+        if (
+          event.shiftKey &&
+          (document.activeElement === first ||
+            document.activeElement === props.heading.current)
+        ) {
+          event.preventDefault();
+          last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first?.focus();
+        }
+      }}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) {
+          const rect = event.currentTarget.getBoundingClientRect();
+          if (
+            event.clientX < rect.left ||
+            event.clientX > rect.right ||
+            event.clientY < rect.top ||
+            event.clientY > rect.bottom
+          )
+            requestClose();
+        }
+      }}
+    >
+      <ThreadContent {...props} onClose={requestClose} />
+    </dialog>
   );
 }
