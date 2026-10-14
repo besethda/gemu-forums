@@ -4,7 +4,7 @@ import { SiteShell } from "@/components/site-shell";
 import "./globals.css";
 
 const inter = localFont({
-  src: "./fonts/Inter-variable.ttf",
+  src: "./fonts/Inter-variable.woff2",
   variable: "--font-inter",
   weight: "100 900",
   display: "swap",

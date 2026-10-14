@@ -1,11 +1,15 @@
 "use client";
+import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
 import { Action } from "./site-shell";
 import { AssetCollection } from "./asset-collection";
 import { AssetCard } from "./asset-card";
-import { AssetDetail } from "./asset-detail";
 import { sampleAssets, categories } from "@/lib/demo-data";
+
+const AssetDetail = dynamic(() =>
+  import("./asset-detail").then((module) => module.AssetDetail),
+);
 
 export function Assets() {
   const params = useSearchParams();
