@@ -77,13 +77,81 @@ export function ProductPolicies() {
   );
 }
 
-/** Get asset button (also previewed in the submission editor). */
-export function ProductAcquisition({ title }: { title: string }) {
+/**
+ * Get asset button. With an asset id it opens a test checkout that downloads
+ * the file in a new tab; without one (the submission editor's preview) it
+ * shows the "coming soon" notice.
+ */
+export function ProductAcquisition({
+  title,
+  assetId,
+  price = 0,
+}: {
+  title: string;
+  assetId?: string;
+  price?: number;
+}) {
+  const [open, setOpen] = useState(false);
+  if (!assetId) {
+    return (
+      <div className="product-acquisition">
+        <Action info="acquire" subject={title}>
+          Get asset <span aria-hidden="true">↗</span>
+        </Action>
+      </div>
+    );
+  }
   return (
     <div className="product-acquisition">
-      <Action info="acquire" subject={title}>
-        Get asset <span aria-hidden="true">↗</span>
-      </Action>
+      {!open ? (
+        <button type="button" className="button" onClick={() => setOpen(true)}>
+          Get asset <span aria-hidden="true">↗</span>
+        </button>
+      ) : (
+        // Posts in a new tab; the route redirects that tab to a signed
+        // download link. The card fields have no names, so nothing is sent.
+        <form
+          method="post"
+          action={`/assets/${assetId}/download`}
+          target="_blank"
+          className="product-checkout"
+        >
+          {price > 0 && (
+            <div className="form-fields">
+              <div className="field field-wide">
+                <label htmlFor="checkout-name">Name on card</label>
+                <input id="checkout-name" autoComplete="off" required />
+              </div>
+              <div className="field field-wide">
+                <label htmlFor="checkout-card">Card number</label>
+                <input
+                  id="checkout-card"
+                  inputMode="numeric"
+                  placeholder="4242 4242 4242 4242"
+                  autoComplete="off"
+                  required
+                />
+              </div>
+              <div className="field">
+                <label htmlFor="checkout-expiry">Expiry</label>
+                <input id="checkout-expiry" placeholder="MM/YY" autoComplete="off" required />
+              </div>
+              <div className="field">
+                <label htmlFor="checkout-cvc">CVC</label>
+                <input id="checkout-cvc" inputMode="numeric" autoComplete="off" required />
+              </div>
+            </div>
+          )}
+          <button type="submit" className="button">
+            {price > 0 ? `Pay ${formatPrice(price)} and download` : "Download"}
+          </button>
+          <p className="product-transaction-note">
+            {price > 0
+              ? "Test checkout: no payment is taken. The download opens in a new tab."
+              : "The download opens in a new tab."}
+          </p>
+        </form>
+      )}
     </div>
   );
 }
@@ -206,10 +274,13 @@ export function AssetDetail({
           </div>
           <div className="product-price">
             <strong>{formatPrice(asset.price)}</strong>
-            <p>Purchasing and downloads are coming soon.</p>
           </div>
           <ProductPolicies />
-          <ProductAcquisition title={asset.title} />
+          <ProductAcquisition
+            title={asset.title}
+            assetId={asset.id}
+            price={asset.price}
+          />
           <dl className="product-facts">
             <div>
               <dt>File size</dt>
