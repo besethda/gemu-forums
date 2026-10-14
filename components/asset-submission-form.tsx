@@ -8,38 +8,40 @@ import {
   useState,
   type DragEvent,
   type FormEvent,
+  type ReactNode,
   type RefObject,
 } from "react";
 import { createAsset, type MediaRef } from "@/app/assets/actions";
+import { categoryIcon } from "@/components/asset-card";
+import { ProductAcquisition, ProductPolicies } from "@/components/asset-detail";
+import { formatFileSize, formatPrice } from "@/lib/store";
 import { createClient } from "@/lib/supabase/client";
 
 // The asset is uploaded as one zip: the .fbx/.glb model plus its textures.
 const MODEL_EXTENSIONS = [".zip"];
 const TITLE_MAX = 80;
 const DESCRIPTION_MAX = 2000;
+const PRICE_MAX = 10000;
+const PRICE_PATTERN = /^\d+(\.\d{1,2})?$/;
 
 export type Category = { id: number; title: string };
 
-type Field =
-  | "title"
-  | "category"
-  | "price"
-  | "description"
-  | "model"
-  | "media";
+type Field = "media" | "title" | "category" | "price" | "model" | "description";
 type Errors = Partial<Record<Field, string>>;
 type MediaItem = { id: number; file: File; url: string };
 type Status = "idle" | "uploading" | "saving" | "done";
 
+// Listed in page order, so the error summary reads top to bottom.
 const FIELD_LABELS: Record<Field, string> = {
+  media: "Photos & videos",
   title: "Asset name",
   category: "Category",
   price: "Price",
-  description: "Description",
   model: "Asset files",
-  media: "Photos & videos",
+  description: "Description",
 };
 const FIELDS = Object.keys(FIELD_LABELS) as Field[];
+const informationTabs = ["Overview", "Technical details", "Ratings"] as const;
 
 function extensionOf(name: string) {
   const dot = name.lastIndexOf(".");
@@ -54,16 +56,8 @@ function isMediaFile(file: File) {
   return file.type.startsWith("image/") || file.type.startsWith("video/");
 }
 
-function formatBytes(bytes: number) {
-  if (bytes < 1024) return `${bytes} B`;
-  const units = ["KB", "MB", "GB"];
-  let value = bytes / 1024;
-  let unit = 0;
-  while (value >= 1024 && unit < units.length - 1) {
-    value /= 1024;
-    unit++;
-  }
-  return `${value.toFixed(value < 10 ? 1 : 0)} ${units[unit]}`;
+function normalisePrice(price: string) {
+  return price.trim().replace(",", ".");
 }
 
 function uploadErrorMessage(error: unknown) {
@@ -83,9 +77,6 @@ function storagePath(userId: string, file: File) {
   return `${userId}/${crypto.randomUUID()}${extensionOf(file.name)}`;
 }
 
-const PRICE_MAX = 10000;
-const PRICE_PATTERN = /^\d+(\.\d{1,2})?$/;
-
 function validate(
   values: {
     title: string;
@@ -98,20 +89,20 @@ function validate(
   categories: Category[],
 ): Errors {
   const errors: Errors = {};
+  if (values.media.length === 0)
+    errors.media = "Add at least one photo or video.";
   if (!values.title.trim()) errors.title = "Give your asset a name.";
   if (!categories.some((c) => String(c.id) === values.category))
     errors.category = "Choose a category.";
-  const price = values.price.trim().replace(",", ".");
+  const price = normalisePrice(values.price);
   if (!PRICE_PATTERN.test(price) || Number(price) > PRICE_MAX)
     errors.price = `Enter a price from 0 to ${PRICE_MAX}, e.g. 4.99. Use 0 for free.`;
-  if (!values.description.trim()) errors.description = "Describe your asset.";
   if (!values.model) errors.model = "Upload your asset as a .zip file.";
-  if (values.media.length === 0)
-    errors.media = "Add at least one photo or video.";
+  if (!values.description.trim()) errors.description = "Describe your asset.";
   return errors;
 }
 
-/** Minutes and seconds left until `deadline`, ticking every second. */
+/** Milliseconds left until `deadline`, ticking every second. */
 function useTimeLeft(deadline: number) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -122,9 +113,10 @@ function useTimeLeft(deadline: number) {
 }
 
 /**
- * Asset submission for a creator who has verified their email. Files upload
- * straight from the browser to Supabase Storage; the server action then saves
- * the listing as pending review.
+ * Asset submission laid out exactly like the public asset page, with the
+ * creator's parts (media, name, category, price, files, description)
+ * editable in place. Files upload straight from the browser to Supabase
+ * Storage; the server action then saves the listing as pending review.
  */
 export function AssetSubmissionForm({
   userId,
@@ -138,12 +130,12 @@ export function AssetSubmissionForm({
 }) {
   const uid = useId();
   const ids: Record<Field, string> = {
+    media: `${uid}-media`,
     title: `${uid}-title`,
     category: `${uid}-category`,
     price: `${uid}-price`,
-    description: `${uid}-description`,
     model: `${uid}-model`,
-    media: `${uid}-media`,
+    description: `${uid}-description`,
   };
 
   const [title, setTitle] = useState("");
@@ -152,6 +144,8 @@ export function AssetSubmissionForm({
   const [description, setDescription] = useState("");
   const [model, setModel] = useState<File | null>(null);
   const [media, setMedia] = useState<MediaItem[]>([]);
+  const [slide, setSlide] = useState(0);
+  const [activeTab, setActiveTab] = useState(0);
   const [rejected, setRejected] = useState<
     Partial<Record<"model" | "media", string>>
   >({});
@@ -169,6 +163,7 @@ export function AssetSubmissionForm({
   const doneRef = useRef<HTMLDivElement>(null);
   const modelInputRef = useRef<HTMLInputElement>(null);
   const mediaInputRef = useRef<HTMLInputElement>(null);
+  const tabButtons = useRef<(HTMLButtonElement | null)[]>([]);
 
   // Revoke any preview URLs still alive when the form unmounts.
   const liveUrls = useRef(new Set<string>());
@@ -185,6 +180,18 @@ export function AssetSubmissionForm({
       : errors[field];
   const invalidFields = FIELDS.filter((f) => errorFor(f));
   const busy = status === "uploading" || status === "saving";
+
+  const categoryTitle =
+    categories.find((c) => String(c.id) === category)?.title ?? "";
+  const priceValue = normalisePrice(price);
+  const pricePreview =
+    PRICE_PATTERN.test(priceValue) && Number(priceValue) <= PRICE_MAX
+      ? formatPrice(Number(priceValue))
+      : null;
+  const current = media[Math.min(slide, media.length - 1)] ?? null;
+  const shownSlide = current ? media.indexOf(current) : 0;
+  const slideLabel = (item: MediaItem, index: number) =>
+    `${item.file.type.startsWith("video/") ? "Video" : "Photo"} ${index + 1}`;
 
   function addModel(files: File[]) {
     const file = files[0];
@@ -210,8 +217,10 @@ export function AssetSubmissionForm({
         : undefined,
     }));
     if (accepted.length === 0) return;
-    setMedia((current) => [
-      ...current,
+    // Show the first newly added file on the stage.
+    setSlide(media.length);
+    setMedia((existing) => [
+      ...existing,
       ...accepted.map((file) => {
         const url = URL.createObjectURL(file);
         liveUrls.current.add(url);
@@ -223,8 +232,23 @@ export function AssetSubmissionForm({
   function removeMedia(item: MediaItem) {
     URL.revokeObjectURL(item.url);
     liveUrls.current.delete(item.url);
-    setMedia((current) => current.filter((m) => m.id !== item.id));
+    const index = media.indexOf(item);
+    setMedia((existing) => existing.filter((m) => m.id !== item.id));
+    setSlide((s) => (s > index ? s - 1 : Math.max(0, Math.min(s, media.length - 2))));
     mediaInputRef.current?.focus();
+  }
+
+  function moveSlide(step: number) {
+    if (media.length) setSlide((shownSlide + step + media.length) % media.length);
+  }
+
+  function jumpTo(field: Field) {
+    if (field === "description") setActiveTab(0);
+    requestAnimationFrame(() => {
+      const target = document.getElementById(ids[field]);
+      target?.closest("[data-editable]")?.scrollIntoView({ block: "center" });
+      target?.focus({ preventScroll: true });
+    });
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -235,9 +259,10 @@ export function AssetSubmissionForm({
     setSubmitError("");
     const found = validate(values, categories);
     if (Object.keys(found).length > 0 || !model) {
-      // Let the summary render, then move focus to it.
+      // The description lives in the Overview tab; make sure it's visible.
+      if (found.description) setActiveTab(0);
       requestAnimationFrame(() => {
-        summaryRef.current?.scrollIntoView({ block: "nearest" });
+        summaryRef.current?.scrollIntoView({ block: "center" });
         summaryRef.current?.focus({ preventScroll: true });
       });
       return;
@@ -251,9 +276,7 @@ export function AssetSubmissionForm({
       const modelPath = storagePath(userId, model);
       const modelUpload = await supabase.storage
         .from("asset-files")
-        .upload(modelPath, model, {
-          contentType: "application/zip",
-        });
+        .upload(modelPath, model, { contentType: "application/zip" });
       if (modelUpload.error) throw modelUpload.error;
 
       const mediaRefs: MediaRef[] = [];
@@ -276,7 +299,7 @@ export function AssetSubmissionForm({
         title,
         description,
         categoryId: Number(category),
-        price: Number(price.trim().replace(",", ".")),
+        price: Number(priceValue),
         modelPath,
         media: mediaRefs,
       });
@@ -287,7 +310,7 @@ export function AssetSubmissionForm({
       }
       setStatus("done");
       requestAnimationFrame(() => {
-        doneRef.current?.scrollIntoView({ block: "nearest" });
+        window.scrollTo({ top: 0 });
         doneRef.current?.focus({ preventScroll: true });
       });
     } catch (error) {
@@ -298,264 +321,511 @@ export function AssetSubmissionForm({
 
   if (status === "done") {
     return (
-      <div ref={doneRef} tabIndex={-1} role="status" className="asset-form-done">
-        <p className="eyebrow">Submitted</p>
-        <h2>Your asset is in review</h2>
-        <p>
-          The Gemu team reviews every submission before it&apos;s listed in the
-          store. We&apos;ll email you when it&apos;s live or if anything needs
-          changing. This link has now been used; request a new one to submit
-          another asset.
-        </p>
-        <div className="actions">
-          <Link href="/assets" className="button">
-            Back to assets
-          </Link>
+      <div className="container section submit-page">
+        <div ref={doneRef} tabIndex={-1} role="status" className="asset-form-done">
+          <p className="eyebrow">Submitted</p>
+          <h1>Your asset is in review</h1>
+          <p>
+            The Gemu team reviews every submission before it&apos;s listed in
+            the store. We&apos;ll email you when it&apos;s live or if anything
+            needs changing. This link has now been used; request a new one to
+            submit another asset.
+          </p>
+          <div className="actions">
+            <Link href="/assets" className="button">
+              Back to assets
+            </Link>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <form noValidate onSubmit={handleSubmit} className="asset-form">
-      <p
-        className={expired ? "asset-form-timer is-expired" : "asset-form-timer"}
-        aria-live="polite"
-      >
-        {expired
-          ? "Your 30 minutes are up. Request a new link from the assets page to submit."
-          : `${minutesLeft} ${minutesLeft === 1 ? "minute" : "minutes"} left to submit with this link.`}
-      </p>
-
-      {attempted && invalidFields.length > 0 && (
-        <div
-          ref={summaryRef}
-          tabIndex={-1}
-          role="alert"
-          className="asset-form-summary"
-        >
-          <strong>
-            {invalidFields.length === 1
-              ? "1 field needs attention"
-              : `${invalidFields.length} fields need attention`}
-          </strong>
-          <ul>
-            {invalidFields.map((f) => (
-              <li key={f}>
-                <a
-                  href={`#${ids[f]}`}
-                  onClick={(e) => {
-                    const target = document.getElementById(ids[f]);
-                    if (!target) return;
-                    e.preventDefault();
-                    target.parentElement?.scrollIntoView({ block: "center" });
-                    target.focus({ preventScroll: true });
-                  }}
-                >
-                  {FIELD_LABELS[f]}: {errorFor(f)}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      <fieldset disabled={busy || expired} className="asset-form-fieldset">
-        <div className="form-fields asset-form-row">
-          <TextField
-            id={ids.title}
-            label={FIELD_LABELS.title}
-            value={title}
-            onChange={setTitle}
-            max={TITLE_MAX}
-            error={errorFor("title")}
-            placeholder="e.g. Modular voxel cabin"
-          />
-          <div>
-            <div className="asset-form-label-row">
-              <label htmlFor={ids.category}>{FIELD_LABELS.category}</label>
-            </div>
-            <select
-              id={ids.category}
-              name="category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              required
-              aria-invalid={!!errorFor("category")}
-              aria-describedby={
-                errorFor("category") ? `${ids.category}-error` : undefined
-              }
-            >
-              <option value="">Choose a category</option>
-              {categories.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.title}
-                </option>
-              ))}
-            </select>
-            <FieldError
-              id={`${ids.category}-error`}
-              message={errorFor("category")}
-            />
-          </div>
-        </div>
-
-        <div className="asset-form-price">
-          <div className="asset-form-label-row">
-            <label htmlFor={ids.price}>{FIELD_LABELS.price} (EUR)</label>
-          </div>
-          <p id={`${ids.price}-hint`} className="asset-form-hint">
-            Enter 0 to offer it for free.
+    <form noValidate onSubmit={handleSubmit} className="listing-editor">
+      <div className="listing-editor-intro">
+        <div className="container">
+          <p className="eyebrow">Submit an asset</p>
+          <p>
+            This is how your listing will look in the store. Fill in the areas
+            with dashed outlines, then submit it for review.
           </p>
-          <div className="asset-form-price-input">
-            <span aria-hidden="true">€</span>
-            <input
-              id={ids.price}
-              name="price"
-              inputMode="decimal"
-              autoComplete="off"
-              placeholder="0.00"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              required
-              aria-invalid={!!errorFor("price")}
-              aria-describedby={`${ids.price}-hint${errorFor("price") ? ` ${ids.price}-error` : ""}`}
-            />
-          </div>
-          <FieldError id={`${ids.price}-error`} message={errorFor("price")} />
         </div>
+      </div>
 
-        <TextField
-          id={ids.description}
-          label={FIELD_LABELS.description}
-          hint="What's included, polycount, rig or animation details, and how it's meant to be used."
-          value={description}
-          onChange={setDescription}
-          max={DESCRIPTION_MAX}
-          error={errorFor("description")}
-          multiline
-        />
-
-        <fieldset className="asset-form-group">
-          <legend id={`${ids.model}-label`} className="asset-form-legend">
-            {FIELD_LABELS.model}
-          </legend>
-          <p id={`${ids.model}-hint`} className="asset-form-hint">
-            One .zip containing your .fbx or .glb model and its textures, up
-            to 50 MB.
-          </p>
-          {model && (
-            <div className="asset-form-file">
-              <span className="asset-form-drop-icon">
-                <CubeIcon />
-              </span>
-              <div className="asset-form-file-info">
-                <p className="asset-form-file-name" title={model.name}>
-                  {model.name}
-                </p>
-                <p className="asset-form-file-meta">
-                  {extensionOf(model.name).slice(1)} ·{" "}
-                  {formatBytes(model.size)}
-                </p>
-              </div>
-              <div className="asset-form-file-actions">
-                <button
-                  type="button"
-                  className="text-button"
-                  onClick={() => modelInputRef.current?.click()}
-                >
-                  Replace
-                </button>
-                <button
-                  type="button"
-                  className="text-button"
-                  onClick={() => {
-                    setModel(null);
-                    requestAnimationFrame(() =>
-                      modelInputRef.current?.focus(),
-                    );
-                  }}
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          )}
-          <DropZone
-            id={ids.model}
-            inputRef={modelInputRef}
-            accept={MODEL_EXTENSIONS.join(",")}
-            labelledBy={`${ids.model}-label`}
-            error={errorFor("model")}
-            onFiles={addModel}
-            hidden={!!model}
-            prompt="Drop your .zip here or choose a file"
-            detail=".zip with your model and textures"
-          />
-          <FieldError id={`${ids.model}-error`} message={errorFor("model")} />
-        </fieldset>
-
-        <fieldset className="asset-form-group">
-          <legend className="asset-form-legend asset-form-label-row">
-            <span id={`${ids.media}-label`}>{FIELD_LABELS.media}</span>
-            {media.length > 0 && (
-              <span className="asset-form-count">
-                {media.length} {media.length === 1 ? "file" : "files"}
-              </span>
-            )}
-          </legend>
-          <p id={`${ids.media}-hint`} className="asset-form-hint">
-            Add at least one. Show the asset from a few angles, in use, or
-            animated.
-          </p>
-          {media.length > 0 && (
-            <ul className="asset-form-media">
-              {media.map((item) => (
-                <MediaTile
-                  key={item.id}
-                  item={item}
-                  onRemove={() => removeMedia(item)}
-                />
+      <div className="container product-page">
+        {attempted && invalidFields.length > 0 && (
+          <div
+            ref={summaryRef}
+            tabIndex={-1}
+            role="alert"
+            className="asset-form-summary listing-editor-summary"
+          >
+            <strong>
+              {invalidFields.length === 1
+                ? "1 field needs attention"
+                : `${invalidFields.length} fields need attention`}
+            </strong>
+            <ul>
+              {invalidFields.map((f) => (
+                <li key={f}>
+                  <a
+                    href={`#${ids[f]}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      jumpTo(f);
+                    }}
+                  >
+                    {FIELD_LABELS[f]}: {errorFor(f)}
+                  </a>
+                </li>
               ))}
             </ul>
-          )}
-          <DropZone
-            id={ids.media}
-            inputRef={mediaInputRef}
-            accept="image/*,video/*"
-            multiple
-            compact={media.length > 0}
-            labelledBy={`${ids.media}-label`}
-            error={errorFor("media")}
-            onFiles={addMedia}
-            prompt={
-              media.length > 0
-                ? "Add more photos or videos"
-                : "Drop photos and videos here or choose files"
-            }
-            detail="Images and videos · add as many as you like"
-          />
-          <FieldError id={`${ids.media}-error`} message={errorFor("media")} />
-        </fieldset>
-      </fieldset>
-
-      <div className="asset-form-footer">
-        <p className="small" aria-live="polite">
-          {busy
-            ? progress
-            : "The Gemu team reviews every submission before it's listed."}
-        </p>
-        <button type="submit" className="button" disabled={busy || expired}>
-          {busy ? "Submitting…" : "Submit for review"}
-        </button>
-        {submitError && (
-          <p role="alert" className="asset-form-error">
-            <AlertIcon />
-            {submitError}
-          </p>
+          </div>
         )}
+
+        <fieldset disabled={busy || expired} className="listing-editor-fieldset">
+          <nav className="asset-breadcrumbs" aria-label="Breadcrumb preview">
+            <span>Assets</span>
+            <span aria-hidden="true">/</span>
+            <span>{categoryTitle || "Category"}</span>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">{title.trim() || "Your asset"}</span>
+          </nav>
+
+          <div className="product-layout">
+            {/* ── Gallery: photos and videos ─────────────────────────── */}
+            <div className="product-media" data-editable>
+              <div className="product-gallery">
+                <div className="gallery-stage listing-editor-stage">
+                  {current ? (
+                    <>
+                      <MediaPreview item={current} controls />
+                      <button
+                        type="button"
+                        className="listing-editor-remove"
+                        onClick={() => removeMedia(current)}
+                      >
+                        Remove {slideLabel(current, shownSlide).toLowerCase()}
+                      </button>
+                    </>
+                  ) : (
+                    <DropZone
+                      id={ids.media}
+                      inputRef={mediaInputRef}
+                      accept="image/*,video/*"
+                      multiple
+                      variant="stage"
+                      label={FIELD_LABELS.media}
+                      error={errorFor("media")}
+                      onFiles={addMedia}
+                      prompt="Add photos and videos"
+                      detail="Drop files here or choose them · at least one"
+                    />
+                  )}
+                </div>
+                {media.length > 0 && (
+                  <div className="gallery-caption">
+                    <span>{current && slideLabel(current, shownSlide)}</span>
+                    <div>
+                      <button
+                        type="button"
+                        aria-label="Previous preview"
+                        onClick={() => moveSlide(-1)}
+                      >
+                        ←
+                      </button>
+                      <span>
+                        {shownSlide + 1} / {media.length}
+                      </span>
+                      <button
+                        type="button"
+                        aria-label="Next preview"
+                        onClick={() => moveSlide(1)}
+                      >
+                        →
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+              {media.length > 0 && (
+                <div className="gallery-thumbnails" aria-label="Preview images">
+                  {media.map((item, index) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      aria-label={`Show ${slideLabel(item, index).toLowerCase()}`}
+                      aria-pressed={shownSlide === index}
+                      onClick={() => setSlide(index)}
+                    >
+                      <MediaPreview item={item} />
+                      <span>{slideLabel(item, index)}</span>
+                    </button>
+                  ))}
+                  <DropZone
+                    id={ids.media}
+                    inputRef={mediaInputRef}
+                    accept="image/*,video/*"
+                    multiple
+                    variant="tile"
+                    label={FIELD_LABELS.media}
+                    error={errorFor("media")}
+                    onFiles={addMedia}
+                    prompt="Add more"
+                    detail="Photos or videos"
+                  />
+                </div>
+              )}
+              <FieldError id={`${ids.media}-error`} message={errorFor("media")} />
+            </div>
+
+            {/* ── Summary: name, category, price, files ─────────────── */}
+            <aside className="product-summary" aria-label="Listing details">
+              <div data-editable>
+                <label htmlFor={ids.title} className="sr-only">
+                  {FIELD_LABELS.title}
+                </label>
+                <input
+                  id={ids.title}
+                  name="title"
+                  className="listing-editable listing-editable-title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  maxLength={TITLE_MAX}
+                  placeholder="Name your asset"
+                  autoComplete="off"
+                  required
+                  aria-invalid={!!errorFor("title")}
+                  aria-describedby={`${ids.title}-count${errorFor("title") ? ` ${ids.title}-error` : ""}`}
+                />
+                <p id={`${ids.title}-count`} className="listing-editor-count">
+                  {title.length}/{TITLE_MAX}
+                </p>
+                <FieldError id={`${ids.title}-error`} message={errorFor("title")} />
+              </div>
+
+              <div className="product-creator">
+                <span className="creator-avatar" aria-hidden="true">
+                  ◇
+                </span>
+                <span>Community creator</span>
+                <span className="listing-editable-category" data-editable>
+                  <label htmlFor={ids.category} className="sr-only">
+                    {FIELD_LABELS.category}
+                  </label>
+                  {categoryTitle && (
+                    <span aria-hidden="true">{categoryIcon(categoryTitle)}</span>
+                  )}
+                  <select
+                    id={ids.category}
+                    name="category"
+                    className="listing-editable"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    required
+                    aria-invalid={!!errorFor("category")}
+                    aria-describedby={
+                      errorFor("category") ? `${ids.category}-error` : undefined
+                    }
+                  >
+                    <option value="">Choose a category</option>
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.title}
+                      </option>
+                    ))}
+                  </select>
+                </span>
+              </div>
+              <FieldError
+                id={`${ids.category}-error`}
+                message={errorFor("category")}
+              />
+
+              <div className="product-rating">
+                <span aria-hidden="true">☆☆☆☆☆</span>
+                <p className="listing-editor-static">No ratings yet</p>
+              </div>
+
+              <div className="product-price" data-editable>
+                <label htmlFor={ids.price} className="sr-only">
+                  {FIELD_LABELS.price} in euros
+                </label>
+                <span className="listing-editable-price">
+                  <span aria-hidden="true">€</span>
+                  <input
+                    id={ids.price}
+                    name="price"
+                    className="listing-editable"
+                    inputMode="decimal"
+                    autoComplete="off"
+                    placeholder="0.00"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    required
+                    aria-invalid={!!errorFor("price")}
+                    aria-describedby={`${ids.price}-hint${errorFor("price") ? ` ${ids.price}-error` : ""}`}
+                  />
+                </span>
+                <p id={`${ids.price}-hint`}>
+                  {pricePreview === "Free"
+                    ? "Shown as Free in the store."
+                    : pricePreview
+                      ? `Shown as ${pricePreview} in the store. Enter 0 to offer it for free.`
+                      : "Price in euros. Enter 0 to offer it for free."}
+                </p>
+                <FieldError id={`${ids.price}-error`} message={errorFor("price")} />
+              </div>
+
+              <ProductPolicies />
+              <ProductAcquisition title={title.trim() || "Your asset"} />
+
+              <div className="listing-editor-files" data-editable>
+                <p className="listing-editor-label" id={`${ids.model}-label`}>
+                  {FIELD_LABELS.model}
+                </p>
+                {model ? (
+                  <div className="asset-form-file">
+                    <span className="asset-form-drop-icon">
+                      <ZipIcon />
+                    </span>
+                    <div className="asset-form-file-info">
+                      <p className="asset-form-file-name" title={model.name}>
+                        {model.name}
+                      </p>
+                      <p className="asset-form-file-meta">
+                        zip · {formatFileSize(model.size)}
+                      </p>
+                    </div>
+                    <div className="asset-form-file-actions">
+                      <button
+                        type="button"
+                        className="text-button"
+                        onClick={() => modelInputRef.current?.click()}
+                      >
+                        Replace
+                      </button>
+                      <button
+                        type="button"
+                        className="text-button"
+                        onClick={() => {
+                          setModel(null);
+                          requestAnimationFrame(() =>
+                            modelInputRef.current?.focus(),
+                          );
+                        }}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
+                <DropZone
+                  id={ids.model}
+                  inputRef={modelInputRef}
+                  accept={MODEL_EXTENSIONS.join(",")}
+                  variant="block"
+                  hidden={!!model}
+                  label={FIELD_LABELS.model}
+                  error={errorFor("model")}
+                  onFiles={addModel}
+                  prompt="Add your .zip"
+                  detail="Model (.fbx or .glb) and textures · up to 50 MB · only reviewers can download it until purchasing opens"
+                />
+                <FieldError id={`${ids.model}-error`} message={errorFor("model")} />
+              </div>
+
+              <dl className="product-facts">
+                <div>
+                  <dt>File size</dt>
+                  <dd>{model ? formatFileSize(model.size) : "From your .zip"}</dd>
+                </div>
+                <div>
+                  <dt>Release date</dt>
+                  <dd>When approved</dd>
+                </div>
+                <div>
+                  <dt>File format</dt>
+                  <dd>ZIP (model and textures)</dd>
+                </div>
+                <div>
+                  <dt>Support</dt>
+                  <dd>Support information</dd>
+                </div>
+              </dl>
+            </aside>
+
+            {/* ── Tabs: description lives in Overview ───────────────── */}
+            <div className="product-information">
+              <div
+                className="product-tabs"
+                role="tablist"
+                aria-label="Asset information"
+              >
+                {informationTabs.map((label, index) => (
+                  <button
+                    key={label}
+                    type="button"
+                    ref={(node) => {
+                      tabButtons.current[index] = node;
+                    }}
+                    id={`${uid}-tab-${index}`}
+                    role="tab"
+                    aria-selected={activeTab === index}
+                    aria-controls={`${uid}-panel-${index}`}
+                    tabIndex={activeTab === index ? 0 : -1}
+                    onClick={() => setActiveTab(index)}
+                    onKeyDown={(event) => {
+                      let next = index;
+                      if (event.key === "ArrowRight")
+                        next = (index + 1) % informationTabs.length;
+                      else if (event.key === "ArrowLeft")
+                        next =
+                          (index + informationTabs.length - 1) %
+                          informationTabs.length;
+                      else if (event.key === "Home") next = 0;
+                      else if (event.key === "End")
+                        next = informationTabs.length - 1;
+                      else return;
+                      event.preventDefault();
+                      setActiveTab(next);
+                      tabButtons.current[next]?.focus();
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              {informationTabs.map((label, index) => (
+                <section
+                  key={label}
+                  id={`${uid}-panel-${index}`}
+                  role="tabpanel"
+                  aria-labelledby={`${uid}-tab-${index}`}
+                  hidden={activeTab !== index}
+                  className="product-tab-panel"
+                >
+                  {index === 0 ? (
+                    <>
+                      <h2>About this asset</h2>
+                      <div data-editable>
+                        <label htmlFor={ids.description} className="sr-only">
+                          {FIELD_LABELS.description}
+                        </label>
+                        <textarea
+                          id={ids.description}
+                          name="description"
+                          className="listing-editable listing-editable-description"
+                          value={description}
+                          onChange={(e) => setDescription(e.target.value)}
+                          maxLength={DESCRIPTION_MAX}
+                          rows={7}
+                          required
+                          placeholder="Describe your asset: what's included, polycount, rig or animation details, and how it's meant to be used."
+                          aria-invalid={!!errorFor("description")}
+                          aria-describedby={`${ids.description}-count${errorFor("description") ? ` ${ids.description}-error` : ""}`}
+                        />
+                        <p
+                          id={`${ids.description}-count`}
+                          className="listing-editor-count"
+                        >
+                          {description.length}/{DESCRIPTION_MAX}
+                        </p>
+                        <FieldError
+                          id={`${ids.description}-error`}
+                          message={errorFor("description")}
+                        />
+                      </div>
+                      {categoryTitle && (
+                        <div className="product-tags">
+                          <span>{categoryTitle}</span>
+                        </div>
+                      )}
+                    </>
+                  ) : index === 1 ? (
+                    <>
+                      <h2>Technical details</h2>
+                      <dl className="product-facts">
+                        <div>
+                          <dt>Download</dt>
+                          <dd>One ZIP with the model and its textures</dd>
+                        </div>
+                        <div>
+                          <dt>File size</dt>
+                          <dd>{model ? formatFileSize(model.size) : "From your .zip"}</dd>
+                        </div>
+                        <div>
+                          <dt>Released</dt>
+                          <dd>When approved</dd>
+                        </div>
+                        <div>
+                          <dt>Previews</dt>
+                          <dd>
+                            {media.filter((m) => !m.file.type.startsWith("video/")).length}{" "}
+                            photos ·{" "}
+                            {media.filter((m) => m.file.type.startsWith("video/")).length}{" "}
+                            videos
+                          </dd>
+                        </div>
+                      </dl>
+                    </>
+                  ) : (
+                    <>
+                      <h2>Ratings</h2>
+                      <p>
+                        <span aria-hidden="true">☆☆☆☆☆</span> No ratings yet.
+                        Anyone can rate your asset once it&apos;s approved.
+                      </p>
+                    </>
+                  )}
+                </section>
+              ))}
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <div className="listing-editor-bar">
+        <div className="container listing-editor-bar-inner">
+          <p
+            className={expired ? "listing-editor-timer is-expired" : "listing-editor-timer"}
+            aria-live="polite"
+          >
+            {busy
+              ? progress
+              : expired
+                ? "Your 30 minutes are up. Request a new link from the assets page."
+                : `${minutesLeft} ${minutesLeft === 1 ? "minute" : "minutes"} left with this link`}
+          </p>
+          {submitError && (
+            <p role="alert" className="asset-form-error">
+              <AlertIcon />
+              {submitError}
+            </p>
+          )}
+          <button type="submit" className="button" disabled={busy || expired}>
+            {busy ? "Submitting…" : "Submit for review"}
+          </button>
+        </div>
       </div>
     </form>
+  );
+}
+
+function MediaPreview({ item, controls }: { item: MediaItem; controls?: boolean }) {
+  return item.file.type.startsWith("video/") ? (
+    <video
+      src={item.url}
+      controls={controls}
+      muted={!controls}
+      playsInline
+      preload="metadata"
+    />
+  ) : (
+    // Local blob previews can't go through next/image.
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={item.url} alt="" />
   );
 }
 
@@ -569,84 +839,14 @@ function FieldError({ id, message }: { id: string; message?: string }) {
   );
 }
 
-function TextField({
-  id,
-  label,
-  hint,
-  value,
-  onChange,
-  max,
-  error,
-  placeholder,
-  multiline,
-}: {
-  id: string;
-  label: string;
-  hint?: string;
-  value: string;
-  onChange: (value: string) => void;
-  max: number;
-  error?: string;
-  placeholder?: string;
-  multiline?: boolean;
-}) {
-  const describedBy = [
-    hint && `${id}-hint`,
-    error && `${id}-error`,
-    `${id}-count`,
-  ]
-    .filter(Boolean)
-    .join(" ");
-  const shared = {
-    id,
-    name: id,
-    value,
-    maxLength: max,
-    required: true,
-    placeholder,
-    "aria-invalid": !!error,
-    "aria-describedby": describedBy,
-  };
-
-  return (
-    <div className={multiline ? "field-wide" : undefined}>
-      <div className="asset-form-label-row">
-        <label htmlFor={id}>{label}</label>
-        <span id={`${id}-count`} className="asset-form-count">
-          {value.length}/{max}
-        </span>
-      </div>
-      {hint && (
-        <p id={`${id}-hint`} className="asset-form-hint">
-          {hint}
-        </p>
-      )}
-      {multiline ? (
-        <textarea
-          {...shared}
-          rows={5}
-          onChange={(e) => onChange(e.target.value)}
-        />
-      ) : (
-        <input
-          {...shared}
-          type="text"
-          onChange={(e) => onChange(e.target.value)}
-        />
-      )}
-      <FieldError id={`${id}-error`} message={error} />
-    </div>
-  );
-}
-
 function DropZone({
   id,
   inputRef,
   accept,
   multiple,
-  compact,
+  variant,
   hidden,
-  labelledBy,
+  label,
   error,
   onFiles,
   prompt,
@@ -656,12 +856,12 @@ function DropZone({
   inputRef: RefObject<HTMLInputElement | null>;
   accept: string;
   multiple?: boolean;
-  compact?: boolean;
+  variant: "stage" | "tile" | "block";
   hidden?: boolean;
-  labelledBy: string;
+  label: string;
   error?: string;
   onFiles: (files: File[]) => void;
-  prompt: string;
+  prompt: ReactNode;
   detail: string;
 }) {
   const [dragging, setDragging] = useState(false);
@@ -681,9 +881,9 @@ function DropZone({
   }
 
   const className = [
-    "asset-form-drop",
+    "listing-drop",
+    `is-${variant}`,
     hidden && "sr-only",
-    compact && "is-compact",
     dragging && "is-dragging",
     error && "is-invalid",
   ]
@@ -704,8 +904,8 @@ function DropZone({
         accept={accept}
         multiple={multiple}
         tabIndex={hidden ? -1 : undefined}
-        aria-labelledby={`${labelledBy} ${id}-prompt`}
-        aria-describedby={`${id}-hint${error ? ` ${id}-error` : ""}`}
+        aria-label={`${label}: ${typeof prompt === "string" ? prompt : ""}`}
+        aria-describedby={`${id}-detail${error ? ` ${id}-error` : ""}`}
         aria-invalid={!!error}
         className="sr-only"
         onChange={(e) => {
@@ -717,49 +917,16 @@ function DropZone({
         <span className="asset-form-drop-icon">
           <UploadIcon />
         </span>
-        <span>
-          <span id={`${id}-prompt`} className="asset-form-drop-prompt">
+        <span className="listing-drop-text">
+          <span className="asset-form-drop-prompt">
             {dragging ? "Drop to add" : prompt}
           </span>
-          {!compact && (
-            <span className="asset-form-drop-detail">{detail}</span>
-          )}
+          <span id={`${id}-detail`} className="asset-form-drop-detail">
+            {detail}
+          </span>
         </span>
       </label>
     </div>
-  );
-}
-
-function MediaTile({
-  item,
-  onRemove,
-}: {
-  item: MediaItem;
-  onRemove: () => void;
-}) {
-  const isVideo = item.file.type.startsWith("video/");
-  return (
-    <li className="asset-form-tile">
-      {isVideo ? (
-        <video src={item.url} muted playsInline preload="metadata" />
-      ) : (
-        // Local blob previews can't go through next/image.
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={item.url} alt="" />
-      )}
-      <div className="asset-form-tile-meta">
-        <span className="asset-form-badge">{isVideo ? "Video" : "Photo"}</span>
-        <span title={item.file.name}>{item.file.name}</span>
-      </div>
-      <button
-        type="button"
-        onClick={onRemove}
-        aria-label={`Remove ${item.file.name}`}
-        className="asset-form-tile-remove"
-      >
-        <CloseIcon />
-      </button>
-    </li>
   );
 }
 
@@ -771,18 +938,10 @@ function UploadIcon() {
   );
 }
 
-function CubeIcon() {
+function ZipIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
-      <path d="M12 2 3 7v10l9 5 9-5V7l-9-5ZM3 7l9 5 9-5M12 12v10" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function CloseIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-      <path d="M6 6l12 12M18 6 6 18" strokeLinecap="square" />
+      <path d="M6 2h9l5 5v15H6V2Zm9 0v5h5M11 4h2M11 7h2M11 10h2M11 13h2v4h-2v-4Z" strokeLinejoin="round" />
     </svg>
   );
 }

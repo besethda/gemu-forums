@@ -15,12 +15,25 @@ export default function NewAssetPage({
   searchParams,
 }: PageProps<"/assets/new">) {
   return (
+    <Suspense
+      fallback={
+        <SubmitPage>
+          <p>Checking your link…</p>
+        </SubmitPage>
+      }
+    >
+      <SubmissionGate searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+/** Narrow page for the email and status messages. */
+function SubmitPage({ children }: { children: React.ReactNode }) {
+  return (
     <div className="container section submit-page">
       <p className="eyebrow">Share your work</p>
       <h1>Submit an asset</h1>
-      <Suspense fallback={<p>Checking your link…</p>}>
-        <SubmissionGate searchParams={searchParams} />
-      </Suspense>
+      {children}
     </div>
   );
 }
@@ -92,27 +105,22 @@ async function SubmissionGate({
         <RequestLink message="This link has already been used to submit an asset. Request a new one to submit another." />
       );
     case "open":
+      // Full width: the editor mirrors the public asset page layout.
       return (
-        <>
-          <p>
-            Introduce your model, environment or tool. The Gemu team reviews
-            every submission before it&apos;s listed.
-          </p>
-          <AssetSubmissionForm
-            userId={gate.userId}
-            deadline={gate.deadline}
-            categories={gate.categories}
-          />
-        </>
+        <AssetSubmissionForm
+          userId={gate.userId}
+          deadline={gate.deadline}
+          categories={gate.categories}
+        />
       );
   }
 }
 
 function RequestLink({ message }: { message: string }) {
   return (
-    <>
+    <SubmitPage>
       <p>{message}</p>
       <SubmissionLinkForm />
-    </>
+    </SubmitPage>
   );
 }

@@ -49,6 +49,54 @@ function MediaView({
   );
 }
 
+/** Policy panels shown on every listing (also previewed in the submission editor). */
+export function ProductPolicies() {
+  return (
+    <div className="product-policies">
+      <details>
+        <summary>License type</summary>
+        <p>
+          License terms aren&apos;t shown yet. Contact the Gemu team before
+          using this asset in a project.
+        </p>
+      </details>
+      <details>
+        <summary>Compatibility</summary>
+        <p>
+          The Gemu team checks every asset at review. Supported Gemu versions
+          will be listed here.
+        </p>
+      </details>
+      <details>
+        <summary>Purchase & refund policy</summary>
+        <p>
+          Checkout isn&apos;t available yet. Purchase terms will appear here
+          when it is.
+        </p>
+      </details>
+    </div>
+  );
+}
+
+/** Get asset, cart and save buttons (also previewed in the submission editor). */
+export function ProductAcquisition({ title }: { title: string }) {
+  return (
+    <div className="product-acquisition">
+      <Action info="acquire" subject={title}>
+        Get asset <span aria-hidden="true">↗</span>
+      </Action>
+      <Action info="assetCart" subject={title} className="product-icon-button">
+        <span className="sr-only">Cart placeholder</span>
+        <span aria-hidden="true">⊞</span>
+      </Action>
+      <Action info="assetSave" subject={title} className="product-icon-button">
+        <span className="sr-only">Save asset placeholder</span>
+        <span aria-hidden="true">♡</span>
+      </Action>
+    </div>
+  );
+}
+
 export function AssetDetail({
   asset,
   related,
@@ -169,50 +217,8 @@ export function AssetDetail({
             <strong>{formatPrice(asset.price)}</strong>
             <p>Purchasing and downloads are coming soon.</p>
           </div>
-          <div className="product-policies">
-            <details>
-              <summary>License type</summary>
-              <p>
-                License terms aren&apos;t shown yet. Contact the Gemu team before
-                using this asset in a project.
-              </p>
-            </details>
-            <details>
-              <summary>Compatibility</summary>
-              <p>
-                The Gemu team checks every asset at review. Supported Gemu
-                versions will be listed here.
-              </p>
-            </details>
-            <details>
-              <summary>Purchase & refund policy</summary>
-              <p>
-                Checkout isn&apos;t available yet. Purchase terms will appear
-                here when it is.
-              </p>
-            </details>
-          </div>
-          <div className="product-acquisition">
-            <Action info="acquire" subject={asset.title}>
-              Get asset <span aria-hidden="true">↗</span>
-            </Action>
-            <Action
-              info="assetCart"
-              subject={asset.title}
-              className="product-icon-button"
-            >
-              <span className="sr-only">Cart placeholder</span>
-              <span aria-hidden="true">⊞</span>
-            </Action>
-            <Action
-              info="assetSave"
-              subject={asset.title}
-              className="product-icon-button"
-            >
-              <span className="sr-only">Save asset placeholder</span>
-              <span aria-hidden="true">♡</span>
-            </Action>
-          </div>
+          <ProductPolicies />
+          <ProductAcquisition title={asset.title} />
           <dl className="product-facts">
             <div>
               <dt>File size</dt>
