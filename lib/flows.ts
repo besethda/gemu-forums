@@ -183,24 +183,20 @@ export const infoContent = {
     copy: "Engine news, studio stories and Bootcamp updates would appear here when verified content is available. Newsletter subscriptions are not connected in this draft.",
   },
   acquire: {
-    title: "Get asset — preview",
-    copy: "This listing uses concept imagery and placeholder pricing, not a downloadable product. A real acquisition would require verified creator rights, a license, engine compatibility and a delivery service, plus payments for paid assets. Nothing is purchased, downloaded or added to an engine project here.",
+    title: "Get asset",
+    copy: "Purchasing and downloads aren't available yet. Every listed asset has been reviewed by the Gemu team; checkout and delivery are coming soon.",
   },
   assetCart: {
-    title: "Cart — placeholder",
-    copy: "A cart would hold assets before checkout. The preview catalogue has fictional creators and placeholder prices, with no payment service, so no item is added and no transaction takes place.",
+    title: "Cart — coming soon",
+    copy: "A cart will hold assets before checkout. Purchasing isn't available yet, so nothing is added and no transaction takes place.",
   },
   assetSave: {
     title: "Saved assets — placeholder",
     copy: "Saved collections would help you return to assets you like. Account and collection features will be added later. Nothing is saved by this placeholder.",
   },
-  assetReviews: {
-    title: "Asset reviews",
-    copy: "The catalogue contains preview assets, with no real ratings or reviews. Verified reviews and their moderation are future features.",
-  },
   assetSupport: {
     title: "Asset support",
-    copy: "A real listing would provide a verified creator support destination. No creator contact or support service is available for these sample assets.",
+    copy: "Creator support contacts aren't shown yet. For questions about a listing, contact the Gemu team.",
   },
 };
 export type InfoKey = keyof typeof infoContent;

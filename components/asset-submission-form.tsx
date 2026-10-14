@@ -20,7 +20,13 @@ const DESCRIPTION_MAX = 2000;
 
 export type Category = { id: number; title: string };
 
-type Field = "title" | "category" | "description" | "model" | "media";
+type Field =
+  | "title"
+  | "category"
+  | "price"
+  | "description"
+  | "model"
+  | "media";
 type Errors = Partial<Record<Field, string>>;
 type MediaItem = { id: number; file: File; url: string };
 type Status = "idle" | "uploading" | "saving" | "done";
@@ -28,6 +34,7 @@ type Status = "idle" | "uploading" | "saving" | "done";
 const FIELD_LABELS: Record<Field, string> = {
   title: "Asset name",
   category: "Category",
+  price: "Price",
   description: "Description",
   model: "Asset files",
   media: "Photos & videos",
@@ -76,10 +83,14 @@ function storagePath(userId: string, file: File) {
   return `${userId}/${crypto.randomUUID()}${extensionOf(file.name)}`;
 }
 
+const PRICE_MAX = 10000;
+const PRICE_PATTERN = /^\d+(\.\d{1,2})?$/;
+
 function validate(
   values: {
     title: string;
     category: string;
+    price: string;
     description: string;
     model: File | null;
     media: MediaItem[];
@@ -90,6 +101,9 @@ function validate(
   if (!values.title.trim()) errors.title = "Give your asset a name.";
   if (!categories.some((c) => String(c.id) === values.category))
     errors.category = "Choose a category.";
+  const price = values.price.trim().replace(",", ".");
+  if (!PRICE_PATTERN.test(price) || Number(price) > PRICE_MAX)
+    errors.price = `Enter a price from 0 to ${PRICE_MAX}, e.g. 4.99. Use 0 for free.`;
   if (!values.description.trim()) errors.description = "Describe your asset.";
   if (!values.model) errors.model = "Upload your asset as a .zip file.";
   if (values.media.length === 0)
@@ -126,6 +140,7 @@ export function AssetSubmissionForm({
   const ids: Record<Field, string> = {
     title: `${uid}-title`,
     category: `${uid}-category`,
+    price: `${uid}-price`,
     description: `${uid}-description`,
     model: `${uid}-model`,
     media: `${uid}-media`,
@@ -133,6 +148,7 @@ export function AssetSubmissionForm({
 
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
+  const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [model, setModel] = useState<File | null>(null);
   const [media, setMedia] = useState<MediaItem[]>([]);
@@ -161,7 +177,7 @@ export function AssetSubmissionForm({
     return () => urls.forEach((url) => URL.revokeObjectURL(url));
   }, []);
 
-  const values = { title, category, description, model, media };
+  const values = { title, category, price, description, model, media };
   const errors = attempted ? validate(values, categories) : {};
   const errorFor = (field: Field) =>
     field === "model" || field === "media"
@@ -260,6 +276,7 @@ export function AssetSubmissionForm({
         title,
         description,
         categoryId: Number(category),
+        price: Number(price.trim().replace(",", ".")),
         modelPath,
         media: mediaRefs,
       });
@@ -381,6 +398,31 @@ export function AssetSubmissionForm({
               message={errorFor("category")}
             />
           </div>
+        </div>
+
+        <div className="asset-form-price">
+          <div className="asset-form-label-row">
+            <label htmlFor={ids.price}>{FIELD_LABELS.price} (EUR)</label>
+          </div>
+          <p id={`${ids.price}-hint`} className="asset-form-hint">
+            Enter 0 to offer it for free.
+          </p>
+          <div className="asset-form-price-input">
+            <span aria-hidden="true">€</span>
+            <input
+              id={ids.price}
+              name="price"
+              inputMode="decimal"
+              autoComplete="off"
+              placeholder="0.00"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              required
+              aria-invalid={!!errorFor("price")}
+              aria-describedby={`${ids.price}-hint${errorFor("price") ? ` ${ids.price}-error` : ""}`}
+            />
+          </div>
+          <FieldError id={`${ids.price}-error`} message={errorFor("price")} />
         </div>
 
         <TextField

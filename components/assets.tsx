@@ -4,58 +4,82 @@ import { useRef, useState } from "react";
 import { Action } from "./site-shell";
 import { AssetCollection } from "./asset-collection";
 import { AssetCard } from "./asset-card";
-import { AssetDetail } from "./asset-detail";
-import { sampleAssets, categories } from "@/lib/demo-data";
+import type { StoreAsset } from "@/lib/store";
 
-export function Assets() {
+const NEWEST_COUNT = 5;
+
+export function Assets({
+  assets,
+  categories,
+}: {
+  assets: StoreAsset[];
+  categories: string[];
+}) {
   const params = useSearchParams();
-  const legacyAsset = sampleAssets.find(
-    (asset) => asset.id === params.get("asset"),
-  );
   const categoryFromUrl = params.get("category");
   const initialCategory =
     categoryFromUrl && categories.includes(categoryFromUrl)
       ? categoryFromUrl
       : "all";
-  return legacyAsset ? (
-    <AssetDetail key={legacyAsset.id} asset={legacyAsset} />
-  ) : (
-    <AssetCatalogue key={initialCategory} initialCategory={initialCategory} />
+  return (
+    <AssetCatalogue
+      key={initialCategory}
+      initialCategory={initialCategory}
+      assets={assets}
+      categories={categories}
+    />
   );
 }
-function AssetCatalogue({ initialCategory }: { initialCategory: string }) {
+
+function AssetCatalogue({
+  initialCategory,
+  assets,
+  categories,
+}: {
+  initialCategory: string;
+  assets: StoreAsset[];
+  categories: string[];
+}) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState(initialCategory);
-  const [sort, setSort] = useState("recommended");
+  const [sort, setSort] = useState("newest");
   const [showAll, setShowAll] = useState(false);
   const browseHeading = useRef<HTMLHeadingElement>(null);
   const query = search.trim().toLowerCase();
-  const filtered = sampleAssets.filter(
+  const filtered = assets.filter(
     (asset) =>
       (category === "all" || asset.category === category) &&
-      `${asset.name} ${asset.category} ${asset.creator} ${asset.description}`
+      `${asset.title} ${asset.category} ${asset.description}`
         .toLowerCase()
         .includes(query),
   );
   const sorted = [...filtered].sort((a, b) =>
     sort === "name"
-      ? a.name.localeCompare(b.name)
-      : sort === "category"
-        ? a.category.localeCompare(b.category) || a.name.localeCompare(b.name)
-        : 0,
+      ? a.title.localeCompare(b.title)
+      : sort === "price"
+        ? a.price - b.price
+        : sort === "rating"
+          ? (b.ratingAverage ?? 0) - (a.ratingAverage ?? 0) ||
+            b.ratingCount - a.ratingCount
+          : b.releasedAt.localeCompare(a.releasedAt),
   );
   const browsingAll =
-    showAll || !!query || category !== "all" || sort !== "recommended";
+    showAll ||
+    !!query ||
+    category !== "all" ||
+    sort !== "newest" ||
+    assets.length <= NEWEST_COUNT;
   function reset() {
     setSearch("");
     setCategory("all");
-    setSort("recommended");
+    setSort("newest");
     setShowAll(false);
   }
   function seeAll() {
     setShowAll(true);
     requestAnimationFrame(() => browseHeading.current?.focus());
   }
+  const filtering = !!query || category !== "all";
   return (
     <>
       <section className="market-intro dark">
@@ -101,31 +125,39 @@ function AssetCatalogue({ initialCategory }: { initialCategory: string }) {
               value={sort}
               onChange={(e) => setSort(e.target.value)}
             >
-              <option value="recommended">Featured order</option>
+              <option value="newest">Newest</option>
+              <option value="rating">Top rated</option>
+              <option value="price">Price: low to high</option>
               <option value="name">Name: A–Z</option>
-              <option value="category">Category</option>
             </select>
           </div>
         </div>
         <div className="catalogue-note">
-          <p>
-            Preview catalogue · Fictional creators and placeholder prices.
-            Reviews and downloads are unavailable.
-          </p>
+          <p>Every asset is reviewed by the Gemu team before it&apos;s listed.</p>
           <span role="status">
-            {filtered.length} sample assets
-            {query || category !== "all" ? " found" : " to explore"}
+            {filtered.length} {filtered.length === 1 ? "asset" : "assets"}
+            {filtering ? " found" : " to explore"}
           </span>
         </div>
-        {browsingAll ? (
+        {assets.length === 0 ? (
+          <div className="empty-state">
+            <h3>No assets yet.</h3>
+            <p>Be the first to share a model, environment or tool.</p>
+            <Action flow="creator">
+              Share your work <span aria-hidden="true">↗</span>
+            </Action>
+          </div>
+        ) : browsingAll ? (
           <section className="asset-collection" aria-labelledby="browse-title">
             <div className="collection-heading">
               <h2 id="browse-title" ref={browseHeading} tabIndex={-1}>
-                {query || category !== "all" ? "Search results" : "All assets"}
+                {filtering ? "Search results" : "All assets"}
               </h2>
-              <button className="text-button" onClick={reset}>
-                Reset catalogue
-              </button>
+              {(filtering || sort !== "newest" || showAll) && (
+                <button className="text-button" onClick={reset}>
+                  Reset catalogue
+                </button>
+              )}
             </div>
             {sorted.length ? (
               <div className="market-grid">
@@ -136,10 +168,7 @@ function AssetCatalogue({ initialCategory }: { initialCategory: string }) {
             ) : (
               <div className="empty-state">
                 <h3>No matching assets.</h3>
-                <p>
-                  Try another search or category to explore the sample
-                  catalogue.
-                </p>
+                <p>Try another search or category.</p>
                 <button className="button" onClick={reset}>
                   Clear filters
                 </button>
@@ -149,8 +178,8 @@ function AssetCatalogue({ initialCategory }: { initialCategory: string }) {
         ) : (
           <>
             <AssetCollection
-              title="Featured assets"
-              assets={sampleAssets.filter((a) => a.featured)}
+              title="Newest assets"
+              assets={sorted.slice(0, NEWEST_COUNT)}
               action={
                 <button className="text-button" onClick={seeAll}>
                   See all <span aria-hidden="true">→</span>
@@ -159,7 +188,7 @@ function AssetCatalogue({ initialCategory }: { initialCategory: string }) {
             />
             <AssetCollection
               title="More to explore"
-              assets={sampleAssets.filter((a) => !a.featured)}
+              assets={sorted.slice(NEWEST_COUNT)}
               action={
                 <button className="text-button" onClick={seeAll}>
                   See all <span aria-hidden="true">→</span>

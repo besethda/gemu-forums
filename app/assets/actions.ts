@@ -105,6 +105,8 @@ export type NewAsset = {
   title: string;
   description: string;
   categoryId: number;
+  /** In euros, 0 = free. */
+  price: number;
   modelPath: string;
   media: MediaRef[];
 };
@@ -139,6 +141,11 @@ export async function createAsset(
     !description ||
     description.length > 2000 ||
     !Number.isInteger(input.categoryId) ||
+    !Number.isFinite(input.price) ||
+    input.price < 0 ||
+    input.price > 10000 ||
+    // At most two decimals (with a tolerance for floating point, e.g. 4.99 * 100).
+    Math.abs(Math.round(input.price * 100) - input.price * 100) > 1e-6 ||
     !ownPath(input.modelPath) ||
     !input.modelPath.toLowerCase().endsWith(".zip") ||
     input.media.length === 0 ||
@@ -179,6 +186,7 @@ export async function createAsset(
     title,
     description,
     category: input.categoryId,
+    price: input.price,
     creator: creator.id,
     asset: input.modelPath,
     media: input.media,

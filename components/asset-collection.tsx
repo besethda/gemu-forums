@@ -1,5 +1,5 @@
 import { AssetCard } from "./asset-card";
-import type { Asset } from "@/lib/demo-data";
+import type { StoreAsset } from "@/lib/store";
 
 export function AssetCollection({
   title,
@@ -7,7 +7,7 @@ export function AssetCollection({
   action,
 }: {
   title: string;
-  assets: Asset[];
+  assets: StoreAsset[];
   action?: React.ReactNode;
 }) {
   return (

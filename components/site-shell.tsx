@@ -3,7 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import {
+  createContext,
+  Suspense,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { SubmissionLinkForm } from "@/components/submission-link-form";
 import {
   flows,
@@ -60,8 +67,41 @@ function Logo() {
   );
 }
 
+const NAV_LINKS = [
+  ["/", "Home"],
+  ["/community", "Community"],
+  ["/assets", "Assets"],
+] as const;
+
+function NavLinks({
+  pathname,
+  onNavigate,
+}: {
+  pathname?: string;
+  onNavigate: () => void;
+}) {
+  return NAV_LINKS.map(([href, label]) => (
+    <Link
+      key={href}
+      href={href}
+      aria-current={
+        pathname === href ||
+        (pathname && href !== "/" && pathname.startsWith(`${href}/`))
+          ? "page"
+          : undefined
+      }
+      onClick={onNavigate}
+    >
+      {label}
+    </Link>
+  ));
+}
+
+function ActiveNavLinks({ onNavigate }: { onNavigate: () => void }) {
+  return <NavLinks pathname={usePathname()} onNavigate={onNavigate} />;
+}
+
 export function SiteShell({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
   const [menu, setMenu] = useState(false);
   const [request, setRequest] = useState<ModalRequest | null>(null);
   const opener = useRef<HTMLElement | null>(null);
@@ -101,25 +141,11 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
             aria-label="Main navigation"
             className={menu ? "is-open" : ""}
           >
-            {[
-              ["/", "Home"],
-              ["/community", "Community"],
-              ["/assets", "Assets"],
-            ].map(([href, label]) => (
-              <Link
-                key={href}
-                href={href}
-                aria-current={
-                  pathname === href ||
-                  (href !== "/" && pathname.startsWith(`${href}/`))
-                    ? "page"
-                    : undefined
-                }
-                onClick={() => setMenu(false)}
-              >
-                {label}
-              </Link>
-            ))}
+            {/* Pages like /assets/[assetId] only know their path at request
+                time, so the active-link highlight streams in. */}
+            <Suspense fallback={<NavLinks onNavigate={() => setMenu(false)} />}>
+              <ActiveNavLinks onNavigate={() => setMenu(false)} />
+            </Suspense>
             <Action flow="engine" className="button mobile-action">
               Request engine access <span aria-hidden="true">↗</span>
             </Action>

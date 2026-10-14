@@ -21,8 +21,12 @@ export type Database = {
           created_at: string
           creator: number
           description: string
+          file_size: number | null
           id: number
           media: Json
+          price: number
+          rating_count: number
+          rating_total: number
           status: string
           title: string
         }
@@ -32,8 +36,12 @@ export type Database = {
           created_at?: string
           creator: number
           description?: string
+          file_size?: number | null
           id?: number
           media: Json
+          price?: number
+          rating_count?: number
+          rating_total?: number
           status?: string
           title?: string
         }
@@ -43,8 +51,12 @@ export type Database = {
           created_at?: string
           creator?: number
           description?: string
+          file_size?: number | null
           id?: number
           media?: Json
+          price?: number
+          rating_count?: number
+          rating_total?: number
           status?: string
           title?: string
         }
@@ -111,6 +123,10 @@ export type Database = {
     Functions: {
       can_submit_asset: { Args: never; Returns: boolean }
       email_link_signed_in_at: { Args: never; Returns: string }
+      rate_asset: {
+        Args: { stars: number; target_asset: number }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

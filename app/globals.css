@@ -2241,3 +2241,90 @@ body:has(.asset-lightbox[open]) {
 .asset-form-done h2 {
   font-size: 32px;
 }
+
+/* Store media and ratings */
+.market-card-image > video,
+.gallery-stage > video,
+.gallery-thumbnails video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3/2;
+  object-fit: cover;
+  background: var(--ink);
+}
+.gallery-stage > video {
+  aspect-ratio: 16/10;
+  object-fit: contain;
+}
+.gallery-thumbnails video {
+  aspect-ratio: 16/10;
+}
+.market-review [aria-hidden="true"],
+.product-rating-summary [aria-hidden="true"] {
+  color: var(--ink);
+  letter-spacing: 1px;
+}
+.product-description {
+  white-space: pre-line;
+}
+.product-rating-summary {
+  font-size: 15px;
+}
+.star-rating {
+  margin-top: 24px;
+}
+.star-rating fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.star-rating legend {
+  padding: 0;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.star-rating-buttons {
+  display: flex;
+  gap: 4px;
+}
+.star-rating-buttons button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  background: #faf7f5;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--muted);
+}
+.star-rating-buttons button.is-on {
+  color: var(--ink);
+  background: var(--sand);
+}
+.star-rating fieldset:disabled button {
+  cursor: default;
+}
+.star-rating .small {
+  margin-top: 12px;
+}
+.asset-form-price {
+  max-width: 240px;
+}
+.asset-form-price-input {
+  position: relative;
+}
+.asset-form-price-input > span {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+}
+.asset-form-price-input input {
+  padding-left: 28px;
+}
