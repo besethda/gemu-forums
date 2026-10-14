@@ -314,7 +314,7 @@ function AskDialog({ topics, onClose, onPosted }: AskProps) {
         event.preventDefault();
         onClose();
       }}
-      style={{ width: "min(520px, 92vw)", padding: 24 }}
+      className="preview-dialog"
     >
       <h2 id="ask-title">Ask a question</h2>
       {state.phase === "done" ? (
