@@ -515,6 +515,18 @@ function ThreadContent({ discussion, onClose, heading }: ThreadProps) {
           placeholder="Reply to this discussion…"
           value={reply}
           onChange={(event) => setReply(event.target.value)}
+          onKeyDown={(event) => {
+            // Enter，Shift + Enter 
+            if (
+              event.key === "Enter" &&
+              !event.shiftKey &&
+              !event.nativeEvent.isComposing &&
+              !sending
+            ) {
+              event.preventDefault();
+              event.currentTarget.form?.requestSubmit();
+            }
+          }}
         />
         {replyError && <p role="alert">{replyError}</p>}
         <div>
