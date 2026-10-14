@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Action } from "@/components/site-shell";
+import { EngineDemo } from "@/components/engine-demo";
 
 export default function Home() {
   return (
@@ -37,11 +38,11 @@ export default function Home() {
             </div>
             <figure className="hero-visual">
               <Image
-                src="/gemu/voxel-world.png"
-                alt="Voxel concept landscape with a timber outpost, river and pine forest"
-                width={1672}
-                height={941}
-                sizes="(max-width: 800px) 100vw, 55vw"
+                src="/gemu/mountain-third-person.webp"
+                alt="Third-person character in a voxel mountain landscape with a timber yard and crane"
+                width={1251}
+                height={694}
+                sizes="(max-width: 500px) calc(100vw - 32px), (max-width: 800px) calc(100vw - 48px), (max-width: 1100px) calc(55vw - 53px), (max-width: 1296px) calc(55vw - 80px), 634px"
                 preload
               />
             </figure>
@@ -68,7 +69,7 @@ export default function Home() {
           </strong>
         </Link>
       </div>
-      <section id="engine" className="section container">
+      <section id="engine" className="section container engine-section">
         <div className="engine-intro">
           <div>
             <h2>Gemu Engine</h2>
@@ -84,11 +85,11 @@ export default function Home() {
         <div className="capabilities">
           <article>
             <Image
-              src="/gemu/feature-multiplayer-physics.png"
+              src="/gemu/feature-multiplayer-physics.webp"
               alt="Voxel concept of two robot players balancing and moving a stack of cubes"
               width={1536}
               height={1024}
-              sizes="(max-width: 500px) 100vw, (max-width: 800px) 50vw, 25vw"
+              sizes="(max-width: 500px) calc(100vw - 32px), (max-width: 800px) calc(50vw - 36px), (max-width: 1100px) calc(25vw - 34px), (max-width: 1296px) calc(25vw - 42px), 282px"
             />
             <div className="capability-copy">
               <h3>Multiplayer & physics</h3>
@@ -99,11 +100,11 @@ export default function Home() {
           </article>
           <article>
             <Image
-              src="/gemu/feature-lighting-audio.png"
+              src="/gemu/feature-lighting-audio.webp"
               alt="Voxel concept of a room with geometric light, shadows and a speaker"
               width={1536}
               height={1024}
-              sizes="(max-width: 500px) 100vw, (max-width: 800px) 50vw, 25vw"
+              sizes="(max-width: 500px) calc(100vw - 32px), (max-width: 800px) calc(50vw - 36px), (max-width: 1100px) calc(25vw - 34px), (max-width: 1296px) calc(25vw - 42px), 282px"
             />
             <div className="capability-copy">
               <h3>Lighting & audio</h3>
@@ -115,11 +116,11 @@ export default function Home() {
           </article>
           <article>
             <Image
-              src="/gemu/feature-steam-integration.png"
+              src="/gemu/feature-steam-integration.webp"
               alt="Voxel concept of a game controller on connected platforms"
               width={1536}
               height={1024}
-              sizes="(max-width: 500px) 100vw, (max-width: 800px) 50vw, 25vw"
+              sizes="(max-width: 500px) calc(100vw - 32px), (max-width: 800px) calc(50vw - 36px), (max-width: 1100px) calc(25vw - 34px), (max-width: 1296px) calc(25vw - 42px), 282px"
             />
             <div className="capability-copy">
               <h3>Steam integration</h3>
@@ -130,11 +131,11 @@ export default function Home() {
           </article>
           <article>
             <Image
-              src="/gemu/feature-connected-tools.png"
+              src="/gemu/feature-connected-tools.webp"
               alt="Voxel concept of a workbench with modular blocks, a wrench and connectors"
               width={1536}
               height={1024}
-              sizes="(max-width: 500px) 100vw, (max-width: 800px) 50vw, 25vw"
+              sizes="(max-width: 500px) calc(100vw - 32px), (max-width: 800px) calc(50vw - 36px), (max-width: 1100px) calc(25vw - 34px), (max-width: 1296px) calc(25vw - 42px), 282px"
             />
             <div className="capability-copy">
               <h3>Connect your tools</h3>
@@ -142,7 +143,7 @@ export default function Home() {
             </div>
           </article>
         </div>
-        <p className="small capability-note">AI concept illustrations</p>
+        <EngineDemo />
       </section>
       <div className="resource-strip container">
         <strong>Already building?</strong>
@@ -163,31 +164,31 @@ export default function Home() {
           <div className="showcase-grid">
             <figure>
               <Image
-                src="/gemu/voxel-world.png"
-                alt="Voxel forest and river environment concept"
-                width={1672}
-                height={941}
-                sizes="(max-width: 800px) 100vw, 50vw"
+                src="/gemu/world-overview-2.webp"
+                alt="Gemu world overview showing a forest, mountain, riverside buildings and a bridge"
+                width={1762}
+                height={1234}
+                sizes="(max-width: 500px) calc(100vw - 32px), (max-width: 800px) calc(100vw - 48px), (max-width: 1100px) calc(50vw - 48px), (max-width: 1296px) calc(50vw - 64px), 584px"
               />
               <figcaption>
-                <span className="eyebrow">AI concept illustration</span>
+                <span className="eyebrow">Gemu Engine</span>
                 <h3>A world to build in</h3>
                 <p>
-                  An imagined voxel landscape. Approved Gemu gameplay and
-                  project footage will belong here.
+                  Explore a voxel landscape with forests, mountains and
+                  riverside buildings.
                 </p>
               </figcaption>
             </figure>
             <figure>
               <Image
-                src="/gemu/voxel-cabin.png"
-                alt="Modular timber cabin and separate building pieces made of voxels"
-                width={1448}
-                height={1086}
-                sizes="(max-width: 800px) 100vw, 50vw"
+                src="/gemu/floating-blocks.webp"
+                alt="Floating voxel blocks arranged against the sky"
+                width={1098}
+                height={565}
+                sizes="(max-width: 500px) calc(100vw - 32px), (max-width: 800px) calc(100vw - 48px), (max-width: 1100px) calc(50vw - 48px), (max-width: 1296px) calc(50vw - 64px), 584px"
               />
               <figcaption>
-                <span className="eyebrow">AI concept illustration</span>
+                <span className="eyebrow">Voxel building blocks</span>
                 <h3>Start with building blocks</h3>
                 <p>
                   Explore models, environments and tools in the sample
@@ -236,8 +237,8 @@ export default function Home() {
             <div>
               <h3>Start a conversation</h3>
               <p>
-                A real pitch would go to Gemu for review. This draft shows a
-                form placeholder.
+                Your pitch goes straight to the Gemu team, who review it and
+                reply to you by email.
               </p>
             </div>
           </li>
@@ -247,11 +248,11 @@ export default function Home() {
         <div className="container section two-column">
           <figure>
             <Image
-              src="/gemu/voxel-cabin.png"
-              alt="Voxel cabin building-kit concept"
-              width={1448}
-              height={1086}
-              sizes="(max-width: 800px) 100vw, 50vw"
+              src="/gemu/editorscreen.webp"
+              alt="Gemu editor interface with the scene hierarchy, viewport, properties and asset browser"
+              width={1917}
+              height={1006}
+              sizes="(max-width: 500px) calc(100vw - 32px), (max-width: 800px) calc(100vw - 48px), (max-width: 1100px) calc(50vw - 56px), (max-width: 1296px) calc(50vw - 96px), 552px"
             />
           </figure>
           <div>

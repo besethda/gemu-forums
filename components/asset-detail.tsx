@@ -134,7 +134,7 @@ export function AssetDetail({
                   key={current.url}
                   media={current}
                   alt={`${asset.title}, ${slideLabel(current, slide).toLowerCase()}`}
-                  sizes="(max-width: 800px) 100vw, 65vw"
+                  sizes="(max-width: 500px) calc(100vw - 32px), (max-width: 800px) calc(100vw - 48px), (max-width: 1000px) calc(58.33vw - 52px), (max-width: 1100px) calc(63.64vw - 61px), (max-width: 1296px) calc(63.64vw - 82px), 743px"
                   controls
                 />
               )}
@@ -383,7 +383,7 @@ export function AssetDetail({
           <MediaView
             media={current}
             alt={`${asset.title}, ${slideLabel(current, slide).toLowerCase()}`}
-            sizes="90vw"
+            sizes="(max-width: 600px) calc(100vw - 64px), (max-width: 1232px) calc(100vw - 80px), 1150px"
           />
         )}
       </dialog>

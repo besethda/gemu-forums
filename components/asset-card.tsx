@@ -29,6 +29,7 @@ export function AssetCard({ asset }: { asset: StoreAsset }) {
               alt=""
               width={1200}
               height={800}
+              sizes="(max-width: 359px) calc(100vw - 32px), (max-width: 500px) calc(50vw - 24px), (max-width: 600px) calc(50vw - 32px), (max-width: 800px) calc(33.33vw - 27px), (max-width: 1000px) calc(33.33vw - 32px), (max-width: 1100px) calc(20vw - 26px), (max-width: 1296px) calc(20vw - 32px), 227px"
               unoptimized
             />
           ) : null}
