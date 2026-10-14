@@ -2,6 +2,9 @@
 
 import { useEffect, useRef } from "react";
 import { flows, infoContent, type Flow, type FlowKey, type InfoKey } from "@/lib/flows";
+import AccessForm from "@/components/access/AccessForm";
+import FlowForm from "@/components/flow/FlowForm";
+import Newsletter from "@/components/newsletter/Newsletter";
 
 export type ModalRequest =
   | { kind: "form"; key: FlowKey }
@@ -20,6 +23,13 @@ export default function PreviewDialog({
   const config: Flow | null =
     request.kind === "form" ? flows[request.key] : null;
   const info = request.kind === "info" ? infoContent[request.key] : null;
+    const applicationPath =
+    request.kind === "form" && (request.key === "engine" || request.key === "publishing")
+      ? request.key
+      : null;
+  const isNewsletter = request.kind === "info" && request.key === "updates";
+
+
   useEffect(() => {
     const element = dialog.current!;
     element.showModal();
@@ -78,7 +88,8 @@ export default function PreviewDialog({
         ×
       </button>
       <p className="eyebrow">
-        {config ? "Form placeholder" : "Preview information"}
+        {applicationPath ? "Application" : config ? "Form" : isNewsletter ? "Newsletter" : "Preview information"}
+        
       </p>
       <h2 id="dialog-title">{config?.title ?? info?.title}</h2>
       <p id="dialog-intro">{config?.intro ?? info?.copy}</p>
@@ -87,74 +98,16 @@ export default function PreviewDialog({
           <strong>Selected asset:</strong> {request.subject}
         </p>
       )}
-      {config && (
-        <>
-          <p className="disclosure">
-            This form is a visual placeholder. Fields and submission are
-            unavailable in this first draft. Nothing is sent, saved or emailed.
-          </p>
-          <fieldset disabled className="placeholder-fields">
-            <legend className="sr-only">
-              Planned fields — unavailable in this draft
-            </legend>
-            <div className="form-fields">
-              {config.fields.map((field) => (
-                <div
-                  key={field.name}
-                  className={
-                    field.type === "textarea" ? "field field-wide" : "field"
-                  }
-                >
-                  <label htmlFor={`field-${field.name}`}>{field.label}</label>
-                  {field.type === "select" ? (
-                    <select id={`field-${field.name}`} defaultValue="">
-                      <option value="">Choose an option</option>
-                      {field.options?.map((option) => (
-                        <option key={option}>{option}</option>
-                      ))}
-                    </select>
-                  ) : field.type === "textarea" ? (
-                    <textarea
-                      id={`field-${field.name}`}
-                      rows={3}
-                      placeholder="Details will go here"
-                    />
-                  ) : (
-                    <input
-                      id={`field-${field.name}`}
-                      type={field.type ?? "text"}
-                      placeholder={
-                        field.type === "email"
-                          ? "you@example.com"
-                          : field.type === "url"
-                            ? "https://…"
-                            : field.label
-                      }
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-          </fieldset>
-          {request.kind === "form" &&
-            (request.key === "engine" || request.key === "publishing") && (
-              <button
-                type="button"
-                className="text-button form-switch"
-                onClick={() =>
-                  switchFlow(request.key === "engine" ? "publishing" : "engine")
-                }
-              >
-                {request.key === "engine"
-                  ? "View publishing placeholder"
-                  : "View engine access placeholder"}
-              </button>
-            )}
-        </>
+            {applicationPath && <AccessForm initialPath={applicationPath} />}
+      {request.kind === "form" && !applicationPath && request.key !== "creator" && (
+        <FlowForm flowKey={request.key} />
       )}
-      <button className="button placeholder-done" onClick={close}>
-        Done
-      </button>
+      {isNewsletter && <Newsletter />}
+      {!config && !isNewsletter && (
+        <button className="button placeholder-done" onClick={close}>
+          Done
+        </button>
+      )}
     </dialog>
   );
 }

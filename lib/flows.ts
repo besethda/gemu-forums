@@ -159,6 +159,11 @@ export const flows = {
       "Describe what you are trying to do and what you have already tried.",
     fields: [
       { name: "name", label: "Display name", required: true },
+      {
+        name: "email",
+        label: "Email me when someone answers (optional)",
+        type: "email",
+      },
       { name: "title", label: "Question title", required: true },
       {
         name: "topic",
@@ -175,6 +180,7 @@ export const flows = {
       },
     ],
   },
+
   reply: {
     title: "Reply on website",
     intro: "A placeholder for adding your answer to a discussion.",
@@ -201,7 +207,7 @@ export const infoContent = {
   },
   updates: {
     title: "News and updates",
-    copy: "Engine news, studio stories and Bootcamp updates would appear here when verified content is available. Newsletter subscriptions are not connected in this draft.",
+    copy: "Pick the topics you care about and we will only send you those: engine news, studio stories, Bootcamp intakes and more.",
   },
   acquire: {
     title: "Get asset — preview",
