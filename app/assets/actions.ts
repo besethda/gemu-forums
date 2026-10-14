@@ -41,21 +41,6 @@ export async function requestSubmissionLink(
       message: "Submissions aren't available right now. Try again later.",
     };
   }
-  const hourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-  const { count } = await admin
-    .from("submission_link_requests")
-    .select("id", { count: "exact", head: true })
-    .eq("email", email)
-    .gte("created_at", hourAgo);
-  if ((count ?? 0) >= LINKS_PER_HOUR) {
-    return {
-      status: "error",
-      email,
-      message: "Too many links requested for this address. Try again in an hour.",
-    };
-  }
-  await admin.from("submission_link_requests").insert({ email });
-
   // Creates the (hidden) user on first use. Nothing is emailed by Supabase.
   const { data, error } = await admin.auth.admin.generateLink({
     type: "magiclink",
@@ -68,6 +53,21 @@ export async function requestSubmissionLink(
       message: "We couldn't create a link for that address. Try again.",
     };
   }
+
+  // Rate limit, kept in the user's app_metadata (only the secret key can write it).
+  const hourAgo = Date.now() - 60 * 60 * 1000;
+  const previous = (data.user.app_metadata.submission_link_requests ?? []) as number[];
+  const recent = previous.filter((time) => time > hourAgo);
+  if (recent.length >= LINKS_PER_HOUR) {
+    return {
+      status: "error",
+      email,
+      message: "Too many links requested for this address. Try again in an hour.",
+    };
+  }
+  await admin.auth.admin.updateUserById(data.user.id, {
+    app_metadata: { submission_link_requests: [...recent, Date.now()] },
+  });
 
   const requestHeaders = await headers();
   const origin =

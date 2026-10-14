@@ -104,24 +104,6 @@ export type Database = {
         }
         Relationships: []
       }
-      submission_link_requests: {
-        Row: {
-          created_at: string
-          email: string
-          id: number
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          id?: never
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          id?: never
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never
