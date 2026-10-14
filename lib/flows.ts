@@ -183,7 +183,7 @@ export const flows = {
 
   reply: {
     title: "Reply on website",
-    intro: "A placeholder for adding your answer to a discussion.",
+    intro: "Add your answer to this discussion. It goes to the Gemu team for review.",
     fields: [
       { name: "name", label: "Display name", required: true },
       {
@@ -203,7 +203,7 @@ export const infoContent = {
   },
   privacy: {
     title: "Privacy and terms — preview",
-    copy: "Gemu's actual privacy, community and asset terms are still to be supplied. Forms in this draft are inactive placeholders. Sample questions and replies illustrate the forum. No personal information can be entered or submitted.",
+    copy: "This is a hackathon prototype. When you send a form, your name, email and answers are emailed to the Gemu team so they can reply to you. Nothing is stored in a database, and we don't share your details. Gemu's final privacy, community and asset terms are still to be supplied. Sample questions, replies and assets are illustrative.",
   },
   updates: {
     title: "News and updates",

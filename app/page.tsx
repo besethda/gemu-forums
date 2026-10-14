@@ -237,8 +237,8 @@ export default function Home() {
             <div>
               <h3>Start a conversation</h3>
               <p>
-                A real pitch would go to Gemu for review. This draft shows a
-                form placeholder.
+                Your pitch goes straight to the Gemu team, who review it and
+                reply to you by email.
               </p>
             </div>
           </li>

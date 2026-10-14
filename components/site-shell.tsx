@@ -158,7 +158,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
           </div>
           <div className="footer-bottom">
             <span>Gemu · Website draft 2026</span>
-            <span>Concept imagery · No live submissions</span>
+            <span>Concept imagery · Hackathon prototype</span>
             <Action info="privacy" className="text-button">
               Privacy & terms
             </Action>
