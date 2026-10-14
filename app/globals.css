@@ -1498,6 +1498,17 @@ select:user-invalid {
   padding-inline: 12px;
   gap: 12px;
 }
+.product-checkout {
+  display: grid;
+  gap: 16px;
+}
+.product-checkout .form-fields {
+  margin-top: 0;
+  gap: 16px;
+}
+.product-checkout .product-transaction-note {
+  margin-top: 0;
+}
 .product-transaction-note {
   font-size: 11px;
   color: var(--muted);
