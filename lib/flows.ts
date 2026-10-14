@@ -128,7 +128,7 @@ export const flows = {
   creator: {
     title: "Share or sell your work",
     intro:
-      "Enter your email and we'll send you a link to the submission page. The Gemu team reviews every asset before it's listed.",
+      "Enter your email and we'll send you a link to the submission page. Your asset goes live as soon as you publish it.",
     // The real email step is components/submission-link-form.tsx.
     fields: [],
   },
@@ -184,15 +184,7 @@ export const infoContent = {
   },
   acquire: {
     title: "Get asset",
-    copy: "Purchasing and downloads aren't available yet. Every listed asset has been reviewed by the Gemu team; checkout and delivery are coming soon.",
-  },
-  assetCart: {
-    title: "Cart — coming soon",
-    copy: "A cart will hold assets before checkout. Purchasing isn't available yet, so nothing is added and no transaction takes place.",
-  },
-  assetSave: {
-    title: "Saved assets — placeholder",
-    copy: "Saved collections would help you return to assets you like. Account and collection features will be added later. Nothing is saved by this placeholder.",
+    copy: "Purchasing and downloads aren't available yet. Checkout and delivery are coming soon.",
   },
   assetSupport: {
     title: "Asset support",

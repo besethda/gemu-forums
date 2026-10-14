@@ -116,7 +116,7 @@ function useTimeLeft(deadline: number) {
  * Asset submission laid out exactly like the public asset page, with the
  * creator's parts (media, name, category, price, files, description)
  * editable in place. Files upload straight from the browser to Supabase
- * Storage; the server action then saves the listing as pending review.
+ * Storage; the server action then publishes the listing.
  */
 export function AssetSubmissionForm({
   userId,
@@ -151,6 +151,7 @@ export function AssetSubmissionForm({
   >({});
   const [attempted, setAttempted] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
+  const [publishedId, setPublishedId] = useState("");
   const [progress, setProgress] = useState("");
   const [submitError, setSubmitError] = useState("");
 
@@ -294,7 +295,7 @@ export function AssetSubmissionForm({
       }
 
       setStatus("saving");
-      setProgress("Saving your submission…");
+      setProgress("Publishing your asset…");
       const result = await createAsset({
         title,
         description,
@@ -308,6 +309,7 @@ export function AssetSubmissionForm({
         setStatus("idle");
         return;
       }
+      setPublishedId(result.id);
       setStatus("done");
       requestAnimationFrame(() => {
         window.scrollTo({ top: 0 });
@@ -323,16 +325,17 @@ export function AssetSubmissionForm({
     return (
       <div className="container section submit-page">
         <div ref={doneRef} tabIndex={-1} role="status" className="asset-form-done">
-          <p className="eyebrow">Submitted</p>
-          <h1>Your asset is in review</h1>
+          <p className="eyebrow">Published</p>
+          <h1>Your asset is live</h1>
           <p>
-            The Gemu team reviews every submission before it&apos;s listed in
-            the store. We&apos;ll email you when it&apos;s live or if anything
-            needs changing. This link has now been used; request a new one to
-            submit another asset.
+            &ldquo;{title.trim()}&rdquo; is now listed in the store. This link
+            has been used; request a new one to share another asset.
           </p>
           <div className="actions">
-            <Link href="/assets" className="button">
+            <Link href={`/assets/${publishedId}`} className="button">
+              View your listing
+            </Link>
+            <Link href="/assets" className="text-button">
               Back to assets
             </Link>
           </div>
@@ -348,7 +351,7 @@ export function AssetSubmissionForm({
           <p className="eyebrow">Submit an asset</p>
           <p>
             This is how your listing will look in the store. Fill in the areas
-            with dashed outlines, then submit it for review.
+            with dashed outlines, then publish it.
           </p>
         </div>
       </div>
@@ -631,7 +634,7 @@ export function AssetSubmissionForm({
                   error={errorFor("model")}
                   onFiles={addModel}
                   prompt="Add your .zip"
-                  detail="Model (.fbx or .glb) and textures · up to 50 MB · only reviewers can download it until purchasing opens"
+                  detail="Model (.fbx or .glb) and textures · up to 50 MB · buyers can download it once purchasing opens"
                 />
                 <FieldError id={`${ids.model}-error`} message={errorFor("model")} />
               </div>
@@ -643,7 +646,7 @@ export function AssetSubmissionForm({
                 </div>
                 <div>
                   <dt>Release date</dt>
-                  <dd>When approved</dd>
+                  <dd>When you publish</dd>
                 </div>
                 <div>
                   <dt>File format</dt>
@@ -757,7 +760,7 @@ export function AssetSubmissionForm({
                         </div>
                         <div>
                           <dt>Released</dt>
-                          <dd>When approved</dd>
+                          <dd>When you publish</dd>
                         </div>
                         <div>
                           <dt>Previews</dt>
@@ -775,7 +778,7 @@ export function AssetSubmissionForm({
                       <h2>Ratings</h2>
                       <p>
                         <span aria-hidden="true">☆☆☆☆☆</span> No ratings yet.
-                        Anyone can rate your asset once it&apos;s approved.
+                        Anyone can rate your asset once it&apos;s published.
                       </p>
                     </>
                   )}
@@ -805,7 +808,7 @@ export function AssetSubmissionForm({
             </p>
           )}
           <button type="submit" className="button" disabled={busy || expired}>
-            {busy ? "Submitting…" : "Submit for review"}
+            {busy ? "Publishing…" : "Publish asset"}
           </button>
         </div>
       </div>

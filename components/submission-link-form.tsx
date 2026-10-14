@@ -58,8 +58,7 @@ export function SubmissionLinkForm() {
         </p>
       ) : (
         <p id={`${id}-hint`} className="small">
-          No account needed. We only use your email to verify the submission
-          and contact you about its review.
+          No account needed. We only use your email to verify that it&apos;s you.
         </p>
       )}
     </form>

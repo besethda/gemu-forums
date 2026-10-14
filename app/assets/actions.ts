@@ -1,7 +1,9 @@
 "use server";
 
+import { updateTag } from "next/cache";
 import { headers } from "next/headers";
 import { sendEmail } from "@/lib/send-email";
+import { ASSETS_TAG } from "@/lib/store-data";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { submissionDeadline } from "@/lib/submission-window";
@@ -118,7 +120,7 @@ export type NewAsset = {
  */
 export async function createAsset(
   input: NewAsset,
-): Promise<{ ok: true } | { ok: false; error: string }> {
+): Promise<{ ok: true; id: string } | { ok: false; error: string }> {
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims;
@@ -181,21 +183,28 @@ export async function createAsset(
     creator = inserted.data;
   }
 
-  // No .select(): pending assets aren't readable, so returning the row would fail.
-  const { error } = await supabase.from("assets").insert({
-    title,
-    description,
-    category: input.categoryId,
-    price: input.price,
-    creator: creator.id,
-    asset: input.modelPath,
-    media: input.media,
-  });
+  // Assets are published straight away (the database sets status to
+  // 'approved'), so the new row is readable and its id can be returned.
+  const { data: asset, error } = await supabase
+    .from("assets")
+    .insert({
+      title,
+      description,
+      category: input.categoryId,
+      price: input.price,
+      creator: creator.id,
+      asset: input.modelPath,
+      media: input.media,
+    })
+    .select("id")
+    .single();
   if (error) {
     return { ok: false, error: "We couldn't save your submission. Try again." };
   }
 
+  // Show the new listing in the catalogue right away.
+  updateTag(ASSETS_TAG);
   // One post per link: end the session so the link can't be reused.
   await supabase.auth.signOut();
-  return { ok: true };
+  return { ok: true, id: String(asset.id) };
 }

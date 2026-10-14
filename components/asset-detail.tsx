@@ -63,8 +63,7 @@ export function ProductPolicies() {
       <details>
         <summary>Compatibility</summary>
         <p>
-          The Gemu team checks every asset at review. Supported Gemu versions
-          will be listed here.
+          Supported Gemu versions will be listed here as they are confirmed.
         </p>
       </details>
       <details>
@@ -78,20 +77,12 @@ export function ProductPolicies() {
   );
 }
 
-/** Get asset, cart and save buttons (also previewed in the submission editor). */
+/** Get asset button (also previewed in the submission editor). */
 export function ProductAcquisition({ title }: { title: string }) {
   return (
     <div className="product-acquisition">
       <Action info="acquire" subject={title}>
         Get asset <span aria-hidden="true">↗</span>
-      </Action>
-      <Action info="assetCart" subject={title} className="product-icon-button">
-        <span className="sr-only">Cart placeholder</span>
-        <span aria-hidden="true">⊞</span>
-      </Action>
-      <Action info="assetSave" subject={title} className="product-icon-button">
-        <span className="sr-only">Save asset placeholder</span>
-        <span aria-hidden="true">♡</span>
       </Action>
     </div>
   );

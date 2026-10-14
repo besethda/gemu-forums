@@ -133,7 +133,7 @@ function AssetCatalogue({
           </div>
         </div>
         <div className="catalogue-note">
-          <p>Every asset is reviewed by the Gemu team before it&apos;s listed.</p>
+          <p>Models, environments and tools shared by Gemu creators.</p>
           <span role="status">
             {filtered.length} {filtered.length === 1 ? "asset" : "assets"}
             {filtering ? " found" : " to explore"}

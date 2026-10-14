@@ -1597,27 +1597,13 @@ select:user-invalid {
 }
 .product-acquisition {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 48px 48px;
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
   margin-top: 24px;
 }
 .product-acquisition > .button {
   padding-inline: 12px;
   gap: 12px;
-}
-.product-icon-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 48px;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius);
-  background: none;
-  font-size: 24px;
-  line-height: 1;
-}
-.product-icon-button:hover {
-  background: var(--sand);
 }
 .product-transaction-note {
   font-size: 11px;
@@ -1700,7 +1686,7 @@ body:has(.asset-lightbox[open]) {
     font-size: 28px;
   }
   .product-acquisition {
-    grid-template-columns: minmax(0, 1fr) 44px 44px;
+    grid-template-columns: minmax(0, 1fr);
     gap: 8px;
   }
   .product-acquisition > .button {
@@ -1760,7 +1746,7 @@ body:has(.asset-lightbox[open]) {
     font-size: 32px;
   }
   .product-acquisition {
-    grid-template-columns: minmax(0, 1fr) 48px 48px;
+    grid-template-columns: minmax(0, 1fr);
   }
   .product-acquisition > .button {
     font-size: 13px;
@@ -1884,7 +1870,7 @@ body:has(.asset-lightbox[open]) {
     grid-column: auto;
   }
   .product-acquisition {
-    grid-template-columns: minmax(0, 1fr) 44px 44px;
+    grid-template-columns: minmax(0, 1fr);
   }
   .product-acquisition > .button {
     font-size: 12px;
