@@ -433,10 +433,6 @@ h3 + p {
   object-fit: cover;
   border: 1px solid var(--border-light);
 }
-.showcase-grid figure:last-child > img {
-  object-fit: contain;
-  background: var(--paper);
-}
 .showcase-grid figcaption {
   padding-top: 24px;
 }
@@ -480,9 +476,10 @@ h3 + p {
   color: var(--muted);
 }
 .bootcamp-section figure > img {
+  width: 100%;
+  height: auto;
   border: 1px solid var(--border-light);
-  aspect-ratio: 1.4;
-  object-fit: contain;
+  aspect-ratio: auto;
 }
 .partner-cards article {
   padding: 24px 0;

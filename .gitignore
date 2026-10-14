@@ -20,6 +20,9 @@
 /website-guidance/Gemu Graphic Profile/AI Image Prompts.md
 /website-guidance/Homepage Wireframe/IMAGE PROMPTS.md
 
+# Original PNG artwork stays local; the site uses public/gemu WebPs
+/website-guidance/Gemu Graphic Profile/sources/*.png
+
 # next.js
 /.next/
 /out/

@@ -192,7 +192,7 @@ export const sampleAssets: Asset[] = [
     price: 14.99,
     name: "Timber cabin kit",
     category: "Models",
-    image: "voxel-cabin.png",
+    image: "voxel-cabin.webp",
     alt: "Voxel timber cabin and modular building pieces",
     description:
       "A modular timber cabin concept with walls, roofing and smaller building pieces. Imagine a starting point for an outpost in your voxel world. This listing contains concept artwork only; no model files are supplied.",
@@ -204,7 +204,7 @@ export const sampleAssets: Asset[] = [
     price: 24.99,
     name: "Forest environment",
     category: "Environments",
-    image: "voxel-world.png",
+    image: "voxel-world.webp",
     alt: "Voxel pine forest, river and timber outpost",
     description:
       "A landscape concept combining pine forest, terrain and water. Explore an imagined world and its atmosphere. This is illustrative artwork, not an environment package or Gemu gameplay capture.",
@@ -216,7 +216,7 @@ export const sampleAssets: Asset[] = [
     price: 9.99,
     name: "Utility robot",
     category: "Models",
-    image: "voxel-robot.png",
+    image: "voxel-robot.webp",
     alt: "Block-based utility robot with a complete silhouette",
     description:
       "An imagined voxel character with a clear block-based silhouette and expressive details. A concept for one of the inhabitants of your next world. No rig, animations or model files are included.",
@@ -228,7 +228,7 @@ export const sampleAssets: Asset[] = [
     price: 19.99,
     name: "World-building toolkit",
     category: "Tools",
-    image: "feature-connected-tools.png",
+    image: "feature-connected-tools.webp",
     alt: "Voxel workbench with modular blocks, a wrench and connectors",
     description:
       "A concept for a modular creator workflow. The workbench illustration suggests how tools and building blocks could come together; no editor extension or software is included.",
@@ -240,7 +240,7 @@ export const sampleAssets: Asset[] = [
     price: 12.99,
     name: "Riverside outpost",
     category: "Environments",
-    image: "voxel-world.png",
+    image: "voxel-world.webp",
     alt: "Riverside voxel settlement in a pine forest",
     description:
       "An environment concept using the forest illustration. Timber buildings and water suggest a place to start an adventure. No terrain or scene files are supplied.",
@@ -252,7 +252,7 @@ export const sampleAssets: Asset[] = [
     price: 0,
     name: "Modular building pieces",
     category: "Models",
-    image: "voxel-cabin.png",
+    image: "voxel-cabin.webp",
     alt: "Cabin concept with modular walls, roof and doors",
     description:
       "A catalogue concept for reusable voxel building pieces, illustrated by the timber cabin artwork. Actual piece counts, dimensions and file formats have not been supplied.",
@@ -263,7 +263,7 @@ export const sampleAssets: Asset[] = [
     price: 29.99,
     name: "Co-op prototype kit",
     category: "Tools",
-    image: "feature-multiplayer-physics.png",
+    image: "feature-multiplayer-physics.webp",
     alt: "Two voxel robot players balancing and moving cubes",
     description:
       "A concept showing how a multiplayer prototype resource could be presented. The robots and cubes are concept imagery. No gameplay code, networking system or project files are included.",
@@ -274,7 +274,7 @@ export const sampleAssets: Asset[] = [
     price: 8.99,
     name: "Lighting & sound kit",
     category: "Tools",
-    image: "feature-lighting-audio.png",
+    image: "feature-lighting-audio.webp",
     alt: "Voxel room with light, shadows and a speaker",
     description:
       "A creator-resource concept with a lighting and audio illustration. No lights, audio recordings, effects or tool files are supplied.",
@@ -285,7 +285,7 @@ export const sampleAssets: Asset[] = [
     price: 0,
     name: "Platform connector",
     category: "Tools",
-    image: "feature-steam-integration.png",
+    image: "feature-steam-integration.webp",
     alt: "Voxel controller and connected platforms",
     description:
       "A concept for presenting a platform integration resource. The connected blocks are an illustration; no platform SDK, credentials or integration software is included.",
@@ -296,14 +296,14 @@ export const sampleAssets: Asset[] = [
     price: 6.99,
     name: "Creator workbench",
     category: "Models",
-    image: "feature-connected-tools.png",
+    image: "feature-connected-tools.webp",
     alt: "Block-built workbench and modular tools",
     description:
       "A voxel workshop prop concept with a bench, tools and modular pieces. This preview contains artwork only, not a downloadable prop set.",
   },
 ];
 export function assetImageSize(image: string) {
-  if (image === "voxel-world.png") return { width: 1672, height: 941 };
+  if (image === "voxel-world.webp") return { width: 1672, height: 941 };
   if (image.startsWith("feature-")) return { width: 1536, height: 1024 };
   return { width: 1448, height: 1086 };
 }
