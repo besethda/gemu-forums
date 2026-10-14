@@ -2295,24 +2295,29 @@ body:has(.asset-lightbox[open]) {
 .listing-drop.is-stage.is-invalid label {
   outline-color: var(--error);
 }
+/* "Add photo or video" tile: same box as a gallery thumbnail button */
 .listing-drop.is-tile {
+  display: flex;
   width: 120px;
 }
 .listing-drop.is-tile label {
-  height: 100%;
-  min-height: 102px;
-  padding: 8px;
-  gap: 6px;
+  flex: 1;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0;
+  padding: 0;
+  text-align: left;
+  background: var(--sand);
 }
-.listing-drop.is-tile .asset-form-drop-icon {
-  width: 28px;
-  height: 28px;
+.gallery-thumbnails .listing-drop-tile-art {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16/10;
+  padding: 0;
+  color: var(--charcoal);
 }
-.listing-drop.is-tile .asset-form-drop-prompt {
-  font-size: 12px;
-}
-.listing-drop.is-tile .asset-form-drop-detail {
-  font-size: 10px;
+.gallery-thumbnails .listing-drop-tile-caption {
+  color: var(--charcoal);
 }
 
 .listing-editor-bar {

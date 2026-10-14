@@ -472,8 +472,8 @@ export function AssetSubmissionForm({
                     label={FIELD_LABELS.media}
                     error={errorFor("media")}
                     onFiles={addMedia}
-                    prompt="Add more"
-                    detail="Photos or videos"
+                    prompt="Add photo or video"
+                    detail="Add more photos or videos to the gallery"
                   />
                 </div>
               )}
@@ -913,19 +913,34 @@ function DropZone({
           e.target.value = "";
         }}
       />
-      <label htmlFor={id}>
-        <span className="asset-form-drop-icon">
-          <UploadIcon />
-        </span>
-        <span className="listing-drop-text">
-          <span className="asset-form-drop-prompt">
+      {variant === "tile" ? (
+        // Same shape as a gallery thumbnail: a 16:10 picture area and a caption.
+        <label htmlFor={id}>
+          <span className="listing-drop-tile-art" aria-hidden="true">
+            <UploadIcon />
+          </span>
+          <span className="listing-drop-tile-caption">
             {dragging ? "Drop to add" : prompt}
           </span>
-          <span id={`${id}-detail`} className="asset-form-drop-detail">
+          <span id={`${id}-detail`} className="sr-only">
             {detail}
           </span>
-        </span>
-      </label>
+        </label>
+      ) : (
+        <label htmlFor={id}>
+          <span className="asset-form-drop-icon">
+            <UploadIcon />
+          </span>
+          <span className="listing-drop-text">
+            <span className="asset-form-drop-prompt">
+              {dragging ? "Drop to add" : prompt}
+            </span>
+            <span id={`${id}-detail`} className="asset-form-drop-detail">
+              {detail}
+            </span>
+          </span>
+        </label>
+      )}
     </div>
   );
 }
