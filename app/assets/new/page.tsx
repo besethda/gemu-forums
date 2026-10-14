@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { Suspense } from "react";
 import { AssetSubmissionForm } from "@/components/asset-submission-form";
 import { SubmissionLinkForm } from "@/components/submission-link-form";
@@ -37,6 +38,8 @@ type Gate =
 
 /** Whether this request may submit: an email-link session under 30 minutes old that hasn't posted yet. */
 async function checkSubmissionGate(): Promise<Gate> {
+  // Everything below depends on the current time, so it must run per request.
+  await connection();
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims;
