@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Action } from "@/components/site-shell";
+import { EngineDemo } from "@/components/engine-demo";
 
 export default function Home() {
   return (
@@ -68,7 +69,7 @@ export default function Home() {
           </strong>
         </Link>
       </div>
-      <section id="engine" className="section container">
+      <section id="engine" className="section container engine-section">
         <div className="engine-intro">
           <div>
             <h2>Gemu Engine</h2>
@@ -142,7 +143,7 @@ export default function Home() {
             </div>
           </article>
         </div>
-        <p className="small capability-note">AI concept illustrations</p>
+        <EngineDemo />
       </section>
       <div className="resource-strip container">
         <strong>Already building?</strong>

@@ -13,7 +13,7 @@
 # testing
 /coverage
 
-# Local review output: screenshots, reports, notes and generated image prompts
+# Local verification scripts, screenshots, reports, notes and image prompts
 /review/
 
 # Design handoff prompt references are kept locally, not versioned

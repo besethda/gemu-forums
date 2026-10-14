@@ -20,10 +20,9 @@ Open `http://127.0.0.1:3000`. For development, use `npm run dev`.
 npm run lint
 npx tsc --noEmit
 npm run build
-node scripts/verify-browser.mjs
 ```
 
-The browser script uses an installed `playwright` package, or a package directory supplied in `PLAYWRIGHT_MODULE_PATH`. It expects the local preview to be running; `PREVIEW_URL` overrides its URL. Playwright is supplied by the Codex runtime on the review host and is not a website dependency.
+Browser verification scripts are kept locally in `review/scripts/`, excluded from Git, ESLint and TypeScript checks. They are optional development tools and are not part of the production website. They use the Codex runtime's Playwright package through `PLAYWRIGHT_MODULE_PATH`, with `PREVIEW_URL` pointing to the running preview. Playwright is not a website dependency.
 
 Browser checks write screenshots and reports locally under `review/`, which is excluded from Git. Image-generation prompts are also excluded. The design handoff inputs remain available locally in `website-guidance/`. Runtime artwork includes the supplied solid logo, three original AI concepts, four matching capability illustrations and five user-supplied engine screenshots. The original screenshot PNGs are preserved in `website-guidance/Gemu Graphic Profile/sources/`. The homepage uses `mountain-third-person.webp` for its hero, `world-overview-2.webp` and `floating-blocks.webp` for its creator showcase, and `editorscreen.webp` for Bootcamp. `world-overview.webp` is available for future use. The included Inter license is `app/fonts/OFL-Inter.txt`.
 
@@ -34,6 +33,10 @@ Runtime images in `public/gemu/` use WebP: scenery and illustrations were encode
 Image `sizes` hints follow the CSS container widths, grid gaps and breakpoints, including the 1200px content limit. Update these hints when changing those layouts. The hero and main asset preview retain their existing preloads.
 
 Inter is served as WOFF2 with all original glyphs and variable-font axes retained; the TTF remains as the source. Preview dialogs and the legacy `?asset=` detail view load their JavaScript on demand. The homepage remains a Server Component, and the production build prerenders the main pages.
+
+The full-width demolition demo below the engine features uses `public/gemu/demolition-demo.mp4` and a 27 KB WebP poster. It shows the first 60 seconds of the source at 2× speed as a 30-second, 1280×772, 30 fps clip. H.264 CRF 28 encoding with no audio and MP4 fast-start reduces the review export from 10.3 MB to 3.45 MB. The video source is assigned only when playback is needed, so the MP4 does not download at the top of the page. Playback is muted, starts when at least 25% of the player is visible, and pauses offscreen or when the tab is hidden. Explicit pause remains in effect after scrolling back. Reduced-motion and available data-saving preferences use manual Play instead of autoplay.
+
+The local `review/scripts/verify-engine-demo.mjs` checker covers desktop/mobile sizing, deferred downloads, autoplay, pause/play, preference changes and hidden-tab behavior. It uses the same `PLAYWRIGHT_MODULE_PATH` and `PREVIEW_URL` overrides as the other local browser checks.
 
 A local production comparison of the original concept-image homepage, before the engine screenshots were added, measured initial resource response bodies at device pixel ratio 1 (including visible-link prefetches, excluding HTML):
 

@@ -389,6 +389,50 @@ h3 + p {
 .capability-note {
   margin-top: 16px;
 }
+.engine-demo {
+  margin-top: 48px;
+}
+.section.engine-section {
+  padding-bottom: 0;
+}
+.engine-demo h3 {
+  font-size: clamp(22px, 3vw, 28px);
+  margin-bottom: 24px;
+}
+.engine-demo-frame {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  background: var(--ink);
+}
+.engine-demo-frame video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1280 / 772;
+}
+.engine-demo-control {
+  position: absolute;
+  right: clamp(12px, 2vw, 24px);
+  bottom: clamp(12px, 2vw, 24px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 44px;
+  min-width: 140px;
+  padding: 12px 16px;
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius);
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 13px;
+  font-weight: 600;
+}
+.engine-demo-control:hover {
+  background: var(--raised);
+}
 .resource-strip {
   display: flex;
   align-items: center;
