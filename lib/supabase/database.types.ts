@@ -20,6 +20,7 @@ export type Database = {
           category: number
           created_at: string
           creator: number
+          creator_name: string
           description: string
           file_size: number | null
           id: number
@@ -35,6 +36,7 @@ export type Database = {
           category: number
           created_at?: string
           creator: number
+          creator_name?: string
           description?: string
           file_size?: number | null
           id?: number
@@ -50,6 +52,7 @@ export type Database = {
           category?: number
           created_at?: string
           creator?: number
+          creator_name?: string
           description?: string
           file_size?: number | null
           id?: number

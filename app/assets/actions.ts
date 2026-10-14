@@ -105,6 +105,8 @@ export type MediaRef = { path: string; type: "image" | "video" };
 
 export type NewAsset = {
   title: string;
+  /** Display name shown on the listing. */
+  creatorName: string;
   description: string;
   categoryId: number;
   /** In euros, 0 = free. */
@@ -134,12 +136,16 @@ export async function createAsset(
 
   const userId = claims.sub;
   const title = input.title.trim();
+  const creatorName =
+    typeof input.creatorName === "string" ? input.creatorName.trim() : "";
   const description = input.description.trim();
   const ownPath = (path: string) =>
     typeof path === "string" && path.startsWith(`${userId}/`);
   if (
     !title ||
     title.length > 80 ||
+    !creatorName ||
+    creatorName.length > 60 ||
     !description ||
     description.length > 2000 ||
     !Number.isInteger(input.categoryId) ||
@@ -189,6 +195,7 @@ export async function createAsset(
     .from("assets")
     .insert({
       title,
+      creator_name: creatorName,
       description,
       category: input.categoryId,
       price: input.price,

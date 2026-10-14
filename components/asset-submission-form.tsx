@@ -20,13 +20,21 @@ import { createClient } from "@/lib/supabase/client";
 // The asset is uploaded as one zip: the .fbx/.glb model plus its textures.
 const MODEL_EXTENSIONS = [".zip"];
 const TITLE_MAX = 80;
+const CREATOR_MAX = 60;
 const DESCRIPTION_MAX = 2000;
 const PRICE_MAX = 10000;
 const PRICE_PATTERN = /^\d+(\.\d{1,2})?$/;
 
 export type Category = { id: number; title: string };
 
-type Field = "media" | "title" | "category" | "price" | "model" | "description";
+type Field =
+  | "media"
+  | "title"
+  | "creator"
+  | "category"
+  | "price"
+  | "model"
+  | "description";
 type Errors = Partial<Record<Field, string>>;
 type MediaItem = { id: number; file: File; url: string };
 type Status = "idle" | "uploading" | "saving" | "done";
@@ -35,6 +43,7 @@ type Status = "idle" | "uploading" | "saving" | "done";
 const FIELD_LABELS: Record<Field, string> = {
   media: "Photos & videos",
   title: "Asset name",
+  creator: "Creator name",
   category: "Category",
   price: "Price",
   model: "Asset files",
@@ -80,6 +89,7 @@ function storagePath(userId: string, file: File) {
 function validate(
   values: {
     title: string;
+    creator: string;
     category: string;
     price: string;
     description: string;
@@ -92,6 +102,8 @@ function validate(
   if (values.media.length === 0)
     errors.media = "Add at least one photo or video.";
   if (!values.title.trim()) errors.title = "Give your asset a name.";
+  if (!values.creator.trim())
+    errors.creator = "Add the name you want to be credited as.";
   if (!categories.some((c) => String(c.id) === values.category))
     errors.category = "Choose a category.";
   const price = normalisePrice(values.price);
@@ -132,6 +144,7 @@ export function AssetSubmissionForm({
   const ids: Record<Field, string> = {
     media: `${uid}-media`,
     title: `${uid}-title`,
+    creator: `${uid}-creator`,
     category: `${uid}-category`,
     price: `${uid}-price`,
     model: `${uid}-model`,
@@ -139,6 +152,7 @@ export function AssetSubmissionForm({
   };
 
   const [title, setTitle] = useState("");
+  const [creator, setCreator] = useState("");
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
@@ -173,7 +187,7 @@ export function AssetSubmissionForm({
     return () => urls.forEach((url) => URL.revokeObjectURL(url));
   }, []);
 
-  const values = { title, category, price, description, model, media };
+  const values = { title, creator, category, price, description, model, media };
   const errors = attempted ? validate(values, categories) : {};
   const errorFor = (field: Field) =>
     field === "model" || field === "media"
@@ -298,6 +312,7 @@ export function AssetSubmissionForm({
       setProgress("Publishing your asset…");
       const result = await createAsset({
         title,
+        creatorName: creator,
         description,
         categoryId: Number(category),
         price: Number(priceValue),
@@ -512,7 +527,26 @@ export function AssetSubmissionForm({
                 <span className="creator-avatar" aria-hidden="true">
                   ◇
                 </span>
-                <span>Community creator</span>
+                <span className="listing-editable-creator" data-editable>
+                  <label htmlFor={ids.creator} className="sr-only">
+                    {FIELD_LABELS.creator}
+                  </label>
+                  <input
+                    id={ids.creator}
+                    name="creator"
+                    className="listing-editable"
+                    value={creator}
+                    onChange={(e) => setCreator(e.target.value)}
+                    maxLength={CREATOR_MAX}
+                    placeholder="Your name or studio"
+                    autoComplete="organization"
+                    required
+                    aria-invalid={!!errorFor("creator")}
+                    aria-describedby={
+                      errorFor("creator") ? `${ids.creator}-error` : undefined
+                    }
+                  />
+                </span>
                 <span className="listing-editable-category" data-editable>
                   <label htmlFor={ids.category} className="sr-only">
                     {FIELD_LABELS.category}
@@ -541,6 +575,10 @@ export function AssetSubmissionForm({
                   </select>
                 </span>
               </div>
+              <FieldError
+                id={`${ids.creator}-error`}
+                message={errorFor("creator")}
+              />
               <FieldError
                 id={`${ids.category}-error`}
                 message={errorFor("category")}

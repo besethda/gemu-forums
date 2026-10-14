@@ -52,6 +52,7 @@ export function AssetCard({ asset }: { asset: StoreAsset }) {
               </>
             )}
           </p>
+          <p className="market-creator">{asset.creatorName}</p>
           <strong className="market-price">{formatPrice(asset.price)}</strong>
         </div>
       </Link>

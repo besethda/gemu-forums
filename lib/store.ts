@@ -6,6 +6,8 @@ export type StoreAsset = {
   id: string;
   title: string;
   description: string;
+  /** Display name chosen by the creator. */
+  creatorName: string;
   category: string;
   price: number;
   /** Size of the uploaded zip in bytes, if known. */

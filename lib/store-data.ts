@@ -9,7 +9,7 @@ import type { StoreAsset, StoreMedia } from "./store";
 export const ASSETS_TAG = "assets";
 
 const ASSET_COLUMNS =
-  "id, title, description, price, file_size, created_at, rating_count, rating_total, media, category_info:categories(title)";
+  "id, title, description, creator_name, price, file_size, created_at, rating_count, rating_total, media, category_info:categories(title)";
 
 // Public reads need no cookies, so this client can be used inside "use cache".
 function publicClient() {
@@ -23,6 +23,7 @@ type AssetRow = {
   id: number;
   title: string;
   description: string;
+  creator_name: string;
   price: number;
   file_size: number | null;
   created_at: string;
@@ -51,6 +52,7 @@ function toStoreAsset(
     id: String(row.id),
     title: row.title,
     description: row.description,
+    creatorName: row.creator_name.trim() || "Community creator",
     category: row.category_info?.title ?? "Uncategorised",
     price: Number(row.price),
     fileSize: row.file_size,

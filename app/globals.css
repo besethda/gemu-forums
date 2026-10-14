@@ -2340,3 +2340,12 @@ body:has(.asset-lightbox[open]) {
     width: 100%;
   }
 }
+.listing-editable-creator {
+  flex: 1 1 140px;
+  min-width: 0;
+  max-width: 240px;
+}
+.listing-editable-creator input {
+  padding: 4px 8px;
+  font-size: 13px;
+}

@@ -49,7 +49,7 @@ function AssetCatalogue({
   const filtered = assets.filter(
     (asset) =>
       (category === "all" || asset.category === category) &&
-      `${asset.title} ${asset.category} ${asset.description}`
+      `${asset.title} ${asset.creatorName} ${asset.category} ${asset.description}`
         .toLowerCase()
         .includes(query),
   );

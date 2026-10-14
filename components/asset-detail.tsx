@@ -195,7 +195,7 @@ export function AssetDetail({
             <span className="creator-avatar" aria-hidden="true">
               ◇
             </span>
-            <span>Community creator</span>
+            <span>{asset.creatorName}</span>
             <span className="market-category">{asset.category}</span>
           </div>
           <div className="product-rating">
