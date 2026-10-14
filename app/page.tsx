@@ -138,8 +138,8 @@ export default function Home() {
               sizes="(max-width: 500px) calc(100vw - 32px), (max-width: 800px) calc(50vw - 36px), (max-width: 1100px) calc(25vw - 34px), (max-width: 1296px) calc(25vw - 42px), 282px"
             />
             <div className="capability-copy">
-              <h3>Connect your tools</h3>
-              <p>Native Model Context Protocol support for compatible tools.</p>
+              <h3>MCP integration</h3>
+              <p>Native Model Context Protocol (MCP) support lets AI assistants work directly in your project.</p>
             </div>
           </article>
         </div>
