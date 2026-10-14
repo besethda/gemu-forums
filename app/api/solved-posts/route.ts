@@ -1,4 +1,3 @@
-
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -30,18 +29,24 @@ export async function GET() {
   const [activeResponse, archivedResponse] = await Promise.all([
     fetch(`${base}/guilds/${DISCORD_GUILD_ID}/threads/active`, {
       headers,
-      next: { revalidate: 300 },
+      cache: "no-store",
     }),
     fetch(
       `${base}/channels/${DISCORD_FORUM_ID}/threads/archived/public?limit=100`,
       {
         headers,
-        next: { revalidate: 300 },
+        cache: "no-store",
       }
     ),
   ]);
 
   if (!activeResponse.ok || !archivedResponse.ok) {
+    console.error(
+      "Discord API error:",
+      activeResponse.status,
+      archivedResponse.status
+    );
+
     return NextResponse.json(
       { error: "Failed to fetch Discord threads" },
       { status: 502 }
@@ -56,21 +61,23 @@ export async function GET() {
     ...archivedData.threads,
   ];
 
-  const solvedPosts = threads
-    .filter(
-      (thread) =>
-        thread.parent_id === DISCORD_FORUM_ID &&
-        thread.applied_tags?.includes(DISCORD_SOLVED_TAG_ID)
-    )
+  const posts = threads
+    .filter((thread) => thread.parent_id === DISCORD_FORUM_ID)
     .map((thread) => ({
       id: thread.id,
       title: thread.name,
       url: `https://discord.com/channels/${DISCORD_GUILD_ID}/${thread.id}`,
+      solved:
+        thread.applied_tags?.includes(DISCORD_SOLVED_TAG_ID) ?? false,
     }));
 
   const uniquePosts = Array.from(
-    new Map(solvedPosts.map((post) => [post.id, post])).values()
+    new Map(posts.map((post) => [post.id, post])).values()
   );
 
-  return NextResponse.json(uniquePosts);
+  return NextResponse.json(uniquePosts, {
+    headers: {
+      "Cache-Control": "no-store",
+    },
+  });
 }
