@@ -1,6 +1,8 @@
 "use server";
 
 import { headers } from "next/headers";
+import { sendEmail } from "@/lib/send-email";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { submissionDeadline } from "@/lib/submission-window";
 
@@ -10,35 +12,88 @@ export type LinkRequestState =
   | { status: "error"; message: string; email: string };
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const LINKS_PER_HOUR = 3;
 
-/** Step 1: email a one-time sign-in link that leads to /assets/new. */
+/**
+ * Step 1: email a one-time sign-in link that leads to /assets/new.
+ * The link is generated and sent here on the server; it must never reach the
+ * browser that asked for it, or anyone could sign in as any address.
+ */
 export async function requestSubmissionLink(
   _previous: LinkRequestState,
   formData: FormData,
 ): Promise<LinkRequestState> {
-  const email = String(formData.get("email") ?? "").trim();
+  const email = String(formData.get("email") ?? "")
+    .trim()
+    .toLowerCase();
   if (!EMAIL_PATTERN.test(email)) {
     return { status: "error", email, message: "Enter a valid email address." };
   }
 
-  const origin = (await headers()).get("origin") ?? "";
-  const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithOtp({
-    email,
-    options: {
-      shouldCreateUser: true,
-      emailRedirectTo: `${origin}/assets/new`,
-    },
-  });
-
-  if (error) {
+  let admin: ReturnType<typeof createAdminClient>;
+  try {
+    admin = createAdminClient();
+  } catch (configError) {
+    console.error(configError);
     return {
       status: "error",
       email,
-      message:
-        error.status === 429
-          ? "Too many links requested. Wait a few minutes and try again."
-          : "We couldn't send the link. Check the address and try again.",
+      message: "Submissions aren't available right now. Try again later.",
+    };
+  }
+  const hourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  const { count } = await admin
+    .from("submission_link_requests")
+    .select("id", { count: "exact", head: true })
+    .eq("email", email)
+    .gte("created_at", hourAgo);
+  if ((count ?? 0) >= LINKS_PER_HOUR) {
+    return {
+      status: "error",
+      email,
+      message: "Too many links requested for this address. Try again in an hour.",
+    };
+  }
+  await admin.from("submission_link_requests").insert({ email });
+
+  // Creates the (hidden) user on first use. Nothing is emailed by Supabase.
+  const { data, error } = await admin.auth.admin.generateLink({
+    type: "magiclink",
+    email,
+  });
+  if (error || !data.properties?.hashed_token) {
+    return {
+      status: "error",
+      email,
+      message: "We couldn't create a link for that address. Try again.",
+    };
+  }
+
+  const requestHeaders = await headers();
+  const origin =
+    requestHeaders.get("origin") ??
+    `${requestHeaders.get("x-forwarded-proto") ?? "https"}://${requestHeaders.get("host")}`;
+  const link = `${origin}/auth/confirm?token_hash=${encodeURIComponent(
+    data.properties.hashed_token,
+  )}&type=email&next=/assets/new`;
+
+  try {
+    await sendEmail({
+      toEmail: email,
+      subject: "Your Gemu asset submission link",
+      message: [
+        "Use this link to submit your asset to the Gemu store:",
+        link,
+        "The link works once and expires in 30 minutes. After opening it you have 30 minutes to post one asset.",
+        "If you didn't ask for this, you can ignore this email.",
+      ].join("\n\n"),
+    });
+  } catch (sendError) {
+    console.error("Submission link email failed", sendError);
+    return {
+      status: "error",
+      email,
+      message: "We couldn't send the email. Try again in a moment.",
     };
   }
   return { status: "sent", email };
