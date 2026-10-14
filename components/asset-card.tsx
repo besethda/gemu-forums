@@ -1,40 +1,60 @@
 import Image from "next/image";
 import Link from "next/link";
-import { assetImageSize, formatAssetPrice, type Asset } from "@/lib/demo-data";
+import {
+  coverMedia,
+  formatPrice,
+  starString,
+  type StoreAsset,
+} from "@/lib/store";
 
-export function AssetCard({ asset }: { asset: Asset }) {
+export function categoryIcon(category: string) {
+  return category === "Models" ? "◇" : category === "Environments" ? "⊞" : "⌘";
+}
+
+export function AssetCard({ asset }: { asset: StoreAsset }) {
+  const cover = coverMedia(asset);
   return (
     <article className="market-card">
       <Link
         href={`/assets/${asset.id}`}
         className="market-card-link"
-        aria-label={`View ${asset.name}`}
+        aria-label={`View ${asset.title}`}
       >
         <div className="market-card-image">
-          <Image
-            src={`/gemu/${asset.image}`}
-            alt={asset.alt}
-            {...assetImageSize(asset.image)}
-            sizes="(max-width: 359px) calc(100vw - 32px), (max-width: 500px) calc(50vw - 24px), (max-width: 600px) calc(50vw - 32px), (max-width: 800px) calc(33.33vw - 27px), (max-width: 1000px) calc(33.33vw - 32px), (max-width: 1100px) calc(20vw - 26px), (max-width: 1296px) calc(20vw - 32px), 227px"
-          />
+          {cover?.type === "video" ? (
+            <video src={cover.url} muted playsInline preload="metadata" />
+          ) : cover ? (
+            <Image
+              src={cover.url}
+              alt=""
+              width={1200}
+              height={800}
+              sizes="(max-width: 359px) calc(100vw - 32px), (max-width: 500px) calc(50vw - 24px), (max-width: 600px) calc(50vw - 32px), (max-width: 800px) calc(33.33vw - 27px), (max-width: 1000px) calc(33.33vw - 32px), (max-width: 1100px) calc(20vw - 26px), (max-width: 1296px) calc(20vw - 32px), 227px"
+              unoptimized
+            />
+          ) : null}
         </div>
         <div className="market-card-copy">
           <span className="market-category">
-            <span aria-hidden="true">
-              {asset.category === "Models"
-                ? "◇"
-                : asset.category === "Environments"
-                  ? "⊞"
-                  : "⌘"}
-            </span>{" "}
+            <span aria-hidden="true">{categoryIcon(asset.category)}</span>{" "}
             {asset.category}
           </span>
-          <h3>{asset.name}</h3>
-          <p className="market-review">No ratings</p>
-          <p className="market-creator">{asset.creator}</p>
-          <strong className="market-price">
-            {formatAssetPrice(asset.price)}
-          </strong>
+          <h3>{asset.title}</h3>
+          <p className="market-review">
+            {asset.ratingAverage === null ? (
+              "No ratings"
+            ) : (
+              <>
+                <span aria-hidden="true">{starString(asset.ratingAverage)}</span>{" "}
+                <span className="sr-only">
+                  Rated {asset.ratingAverage.toFixed(1)} out of 5,
+                </span>
+                ({asset.ratingCount})
+              </>
+            )}
+          </p>
+          <p className="market-creator">{asset.creatorName}</p>
+          <strong className="market-price">{formatPrice(asset.price)}</strong>
         </div>
       </Link>
     </article>

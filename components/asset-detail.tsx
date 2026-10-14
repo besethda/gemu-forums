@@ -4,198 +4,228 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { Action } from "./site-shell";
 import { AssetCollection } from "./asset-collection";
+import { StarRating } from "./star-rating";
 import {
-  assetImageSize,
-  formatAssetPrice,
-  sampleAssets,
-  type Asset,
-} from "@/lib/demo-data";
+  formatFileSize,
+  formatPrice,
+  formatRating,
+  formatReleaseDate,
+  starString,
+  type StoreAsset,
+  type StoreMedia,
+} from "@/lib/store";
 
-const informationTabs = ["Overview", "Technical details", "Reviews"] as const;
-export function AssetDetail({ asset }: { asset: Asset }) {
+const informationTabs = ["Overview", "Technical details", "Ratings"] as const;
+const RATINGS_TAB = 2;
+
+function MediaView({
+  media,
+  alt,
+  sizes,
+  controls,
+}: {
+  media: StoreMedia;
+  alt: string;
+  sizes?: string;
+  controls?: boolean;
+}) {
+  return media.type === "video" ? (
+    <video
+      src={media.url}
+      controls={controls}
+      muted={!controls}
+      playsInline
+      preload="metadata"
+    />
+  ) : (
+    <Image
+      src={media.url}
+      alt={alt}
+      width={1600}
+      height={1000}
+      sizes={sizes}
+      unoptimized
+    />
+  );
+}
+
+/** Policy panels shown on every listing (also previewed in the submission editor). */
+export function ProductPolicies() {
+  return (
+    <div className="product-policies">
+      <details>
+        <summary>License type</summary>
+        <p>
+          License terms aren&apos;t shown yet. Contact the Gemu team before
+          using this asset in a project.
+        </p>
+      </details>
+      <details>
+        <summary>Compatibility</summary>
+        <p>
+          Supported Gemu versions will be listed here as they are confirmed.
+        </p>
+      </details>
+      <details>
+        <summary>Purchase & refund policy</summary>
+        <p>
+          Checkout isn&apos;t available yet. Purchase terms will appear here
+          when it is.
+        </p>
+      </details>
+    </div>
+  );
+}
+
+/** Get asset button (also previewed in the submission editor). */
+export function ProductAcquisition({ title }: { title: string }) {
+  return (
+    <div className="product-acquisition">
+      <Action info="acquire" subject={title}>
+        Get asset <span aria-hidden="true">↗</span>
+      </Action>
+    </div>
+  );
+}
+
+export function AssetDetail({
+  asset,
+  related,
+}: {
+  asset: StoreAsset;
+  related: StoreAsset[];
+}) {
   const [slide, setSlide] = useState(0);
   const [activeTab, setActiveTab] = useState(0);
+  const [rating, setRating] = useState({
+    count: asset.ratingCount,
+    average: asset.ratingAverage,
+  });
   const tabButtons = useRef<(HTMLButtonElement | null)[]>([]);
   const lightbox = useRef<HTMLDialogElement>(null);
   const lightboxClose = useRef<HTMLButtonElement>(null);
-  const contextImage =
-    asset.image === "voxel-world.webp" ? "voxel-cabin.webp" : "voxel-world.webp";
-  const slides = [
-    { image: asset.image, alt: asset.alt, label: "Asset concept" },
-    {
-      image: contextImage,
-      alt:
-        contextImage === "voxel-world.webp"
-          ? "Related voxel forest and riverside world concept"
-          : "Related modular voxel cabin concept",
-      label: "Related world concept",
-    },
-  ];
-  const current = slides[slide];
+  const slides = asset.media;
+  const current = slides[slide] ?? null;
+  const slideLabel = (media: StoreMedia, index: number) =>
+    `${media.type === "video" ? "Video" : "Photo"} ${index + 1}`;
+
+  function showRatings() {
+    setActiveTab(RATINGS_TAB);
+    requestAnimationFrame(() => tabButtons.current[RATINGS_TAB]?.focus());
+  }
+
   return (
     <div className="container product-page">
       <nav className="asset-breadcrumbs" aria-label="Breadcrumb">
         <Link href="/assets">Assets</Link>
         <span aria-hidden="true">/</span>
-        <Link href={`/assets?category=${asset.category}`}>
+        <Link href={`/assets?category=${encodeURIComponent(asset.category)}`}>
           {asset.category}
         </Link>
         <span aria-hidden="true">/</span>
-        <span aria-current="page">{asset.name}</span>
+        <span aria-current="page">{asset.title}</span>
       </nav>
       <div className="product-layout">
         <div className="product-media">
           <div className="product-gallery">
             <div className="gallery-stage">
-              <Image
-                key={current.image}
-                src={`/gemu/${current.image}`}
-                alt={current.alt}
-                {...assetImageSize(current.image)}
-                sizes="(max-width: 500px) calc(100vw - 32px), (max-width: 800px) calc(100vw - 48px), (max-width: 1000px) calc(58.33vw - 52px), (max-width: 1100px) calc(63.64vw - 61px), (max-width: 1296px) calc(63.64vw - 82px), 743px"
-                preload
-              />
-              <button
-                className="gallery-expand"
-                aria-label="Expand image preview"
-                onClick={() => lightbox.current?.showModal()}
-              >
-                <span aria-hidden="true">⛶</span>
-              </button>
-            </div>
-            <div className="gallery-caption">
-              <span>{current.label} · AI illustration</span>
-              <div>
-                <button
-                  aria-label="Previous preview"
-                  onClick={() =>
-                    setSlide(
-                      (current) =>
-                        (current + slides.length - 1) % slides.length,
-                    )
-                  }
-                >
-                  ←
-                </button>
-                <span>
-                  {slide + 1} / {slides.length}
-                </span>
-                <button
-                  aria-label="Next preview"
-                  onClick={() =>
-                    setSlide((current) => (current + 1) % slides.length)
-                  }
-                >
-                  →
-                </button>
-              </div>
-            </div>
-          </div>
-          <div className="gallery-thumbnails" aria-label="Preview images">
-            {slides.map((image, index) => (
-              <button
-                key={image.image}
-                aria-label={`Show ${image.label.toLowerCase()}`}
-                aria-pressed={slide === index}
-                onClick={() => setSlide(index)}
-              >
-                <Image
-                  src={`/gemu/${image.image}`}
-                  alt=""
-                  {...assetImageSize(image.image)}
-                  sizes="120px"
+              {current && (
+                <MediaView
+                  key={current.url}
+                  media={current}
+                  alt={`${asset.title}, ${slideLabel(current, slide).toLowerCase()}`}
+                  sizes="(max-width: 500px) calc(100vw - 32px), (max-width: 800px) calc(100vw - 48px), (max-width: 1000px) calc(58.33vw - 52px), (max-width: 1100px) calc(63.64vw - 61px), (max-width: 1296px) calc(63.64vw - 82px), 743px"
+                  controls
                 />
-                <span>{image.label}</span>
-              </button>
-            ))}
+              )}
+              {current?.type === "image" && (
+                <button
+                  className="gallery-expand"
+                  aria-label="Expand image preview"
+                  onClick={() => lightbox.current?.showModal()}
+                >
+                  <span aria-hidden="true">⛶</span>
+                </button>
+              )}
+            </div>
+            {slides.length > 1 && (
+              <div className="gallery-caption">
+                <span>{current && slideLabel(current, slide)}</span>
+                <div>
+                  <button
+                    aria-label="Previous preview"
+                    onClick={() =>
+                      setSlide((s) => (s + slides.length - 1) % slides.length)
+                    }
+                  >
+                    ←
+                  </button>
+                  <span>
+                    {slide + 1} / {slides.length}
+                  </span>
+                  <button
+                    aria-label="Next preview"
+                    onClick={() => setSlide((s) => (s + 1) % slides.length)}
+                  >
+                    →
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
+          {slides.length > 1 && (
+            <div className="gallery-thumbnails" aria-label="Preview images">
+              {slides.map((media, index) => (
+                <button
+                  key={media.url}
+                  aria-label={`Show ${slideLabel(media, index).toLowerCase()}`}
+                  aria-pressed={slide === index}
+                  onClick={() => setSlide(index)}
+                >
+                  <MediaView media={media} alt="" sizes="120px" />
+                  <span>{slideLabel(media, index)}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
         <aside className="product-summary" aria-labelledby="asset-title">
-          <h1 id="asset-title">{asset.name}</h1>
+          <h1 id="asset-title">{asset.title}</h1>
           <div className="product-creator">
             <span className="creator-avatar" aria-hidden="true">
               ◇
             </span>
-            <span>{asset.creator}</span>
+            <span>{asset.creatorName}</span>
             <span className="market-category">{asset.category}</span>
           </div>
           <div className="product-rating">
-            <span aria-hidden="true">☆☆☆☆☆</span>
-            <Action info="assetReviews" className="text-button">
-              Reviews unavailable
-            </Action>
+            <span aria-hidden="true">{starString(rating.average)}</span>
+            <button className="text-button" onClick={showRatings}>
+              {formatRating(rating.average, rating.count)}
+            </button>
           </div>
           <div className="product-price">
-            <strong>{formatAssetPrice(asset.price)}</strong>
-            <p>Placeholder price · Acquisition unavailable</p>
+            <strong>{formatPrice(asset.price)}</strong>
+            <p>Purchasing and downloads are coming soon.</p>
           </div>
-          <div className="product-policies">
-            <details>
-              <summary>License type</summary>
-              <p>
-                No license has been supplied. Creator rights and permitted uses
-                must be established before an asset can be offered.
-              </p>
-            </details>
-            <details>
-              <summary>Compatibility</summary>
-              <p>
-                Supported Gemu versions, asset formats and import steps have not
-                been verified. These previews contain no engine-ready files.
-              </p>
-            </details>
-            <details>
-              <summary>Purchase & refund policy</summary>
-              <p>
-                This preview has no checkout or transaction. Purchase terms and
-                any applicable refund policy remain to be supplied.
-              </p>
-            </details>
-          </div>
-          <div className="product-acquisition">
-            <Action info="acquire" subject={asset.name}>
-              Get asset — preview <span aria-hidden="true">↗</span>
-            </Action>
-            <Action
-              info="assetCart"
-              subject={asset.name}
-              className="product-icon-button"
-            >
-              <span className="sr-only">Cart placeholder</span>
-              <span aria-hidden="true">⊞</span>
-            </Action>
-            <Action
-              info="assetSave"
-              subject={asset.name}
-              className="product-icon-button"
-            >
-              <span className="sr-only">Save asset placeholder</span>
-              <span aria-hidden="true">♡</span>
-            </Action>
-          </div>
-          <p className="product-transaction-note">
-            No purchase or download is available in this draft.
-          </p>
+          <ProductPolicies />
+          <ProductAcquisition title={asset.title} />
           <dl className="product-facts">
             <div>
-              <dt>License agreement</dt>
-              <dd>Not established</dd>
-            </div>
-            <div>
               <dt>File size</dt>
-              <dd>Not supplied</dd>
-            </div>
-            <div>
-              <dt>Latest version</dt>
-              <dd>Not supplied</dd>
+              <dd>{formatFileSize(asset.fileSize)}</dd>
             </div>
             <div>
               <dt>Release date</dt>
-              <dd>Not supplied</dd>
+              <dd>
+                <time dateTime={asset.releasedAt}>
+                  {formatReleaseDate(asset.releasedAt)}
+                </time>
+              </dd>
             </div>
             <div>
-              <dt>Gemu compatibility</dt>
-              <dd>Unverified</dd>
+              <dt>File format</dt>
+              <dd>ZIP (model and textures)</dd>
             </div>
             <div>
               <dt>Support</dt>
@@ -259,72 +289,69 @@ export function AssetDetail({ asset }: { asset: Asset }) {
               {index === 0 ? (
                 <>
                   <h2>About this asset</h2>
-                  <p>{asset.description}</p>
+                  <p className="product-description">{asset.description}</p>
                   <div className="product-tags">
-                    <span>Voxel concept</span>
                     <span>{asset.category}</span>
                   </div>
-                  <p className="small">
-                    The preview gallery includes an asset concept and a separate
-                    world concept for context. These are AI illustrations, not
-                    screenshots of an actual asset running in Gemu.
-                  </p>
                 </>
               ) : index === 1 ? (
                 <>
                   <h2>Technical details</h2>
                   <dl className="product-facts">
                     <div>
-                      <dt>Available content</dt>
-                      <dd>Concept artwork only</dd>
+                      <dt>Download</dt>
+                      <dd>One ZIP with the model and its textures</dd>
                     </div>
                     <div>
-                      <dt>Asset files</dt>
-                      <dd>Not supplied</dd>
+                      <dt>File size</dt>
+                      <dd>{formatFileSize(asset.fileSize)}</dd>
                     </div>
                     <div>
-                      <dt>File format</dt>
-                      <dd>To be confirmed</dd>
+                      <dt>Released</dt>
+                      <dd>{formatReleaseDate(asset.releasedAt)}</dd>
                     </div>
                     <div>
-                      <dt>Engine compatibility</dt>
-                      <dd>Not verified</dd>
-                    </div>
-                    <div>
-                      <dt>Dependencies</dt>
-                      <dd>Not established</dd>
+                      <dt>Previews</dt>
+                      <dd>
+                        {slides.filter((m) => m.type === "image").length} photos
+                        · {slides.filter((m) => m.type === "video").length}{" "}
+                        videos
+                      </dd>
                     </div>
                   </dl>
                 </>
               ) : (
-                <div className="product-review-empty">
-                  <h2>No reviews to show.</h2>
-                  <p>
-                    Ratings and reviews will appear here when real listings and
-                    review features are available.
+                <>
+                  <h2>Ratings</h2>
+                  <p className="product-rating-summary">
+                    <span aria-hidden="true">{starString(rating.average)}</span>{" "}
+                    {formatRating(rating.average, rating.count)}
                   </p>
-                  <Action info="assetReviews" className="text-button">
-                    About reviews <span aria-hidden="true">↗</span>
-                  </Action>
-                </div>
+                  <StarRating
+                    assetId={asset.id}
+                    onRated={(count, average) => setRating({ count, average })}
+                  />
+                </>
               )}
             </section>
           ))}
         </div>
       </div>
-      <AssetCollection
-        title="You might also explore"
-        assets={sampleAssets.filter((a) => a.id !== asset.id).slice(0, 5)}
-        action={
-          <Link href="/assets" className="text-link">
-            Browse all <span aria-hidden="true">→</span>
-          </Link>
-        }
-      />
+      {related.length > 0 && (
+        <AssetCollection
+          title="You might also explore"
+          assets={related}
+          action={
+            <Link href="/assets" className="text-link">
+              Browse all <span aria-hidden="true">→</span>
+            </Link>
+          }
+        />
+      )}
       <dialog
         ref={lightbox}
         className="asset-lightbox"
-        aria-label={`${asset.name} image preview`}
+        aria-label={`${asset.title} image preview`}
         onKeyDown={(event) => {
           if (event.key === "Tab") {
             event.preventDefault();
@@ -352,13 +379,13 @@ export function AssetDetail({ asset }: { asset: Asset }) {
         >
           ×
         </button>
-        <Image
-          src={`/gemu/${current.image}`}
-          alt={current.alt}
-          {...assetImageSize(current.image)}
-          sizes="(max-width: 600px) calc(100vw - 64px), (max-width: 1232px) calc(100vw - 80px), 1150px"
-        />
-        <p className="small">{current.label} · AI concept illustration</p>
+        {current?.type === "image" && (
+          <MediaView
+            media={current}
+            alt={`${asset.title}, ${slideLabel(current, slide).toLowerCase()}`}
+            sizes="(max-width: 600px) calc(100vw - 64px), (max-width: 1232px) calc(100vw - 80px), 1150px"
+          />
+        )}
       </dialog>
     </div>
   );

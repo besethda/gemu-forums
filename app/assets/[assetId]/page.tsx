@@ -1,30 +1,52 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { AssetDetail } from "@/components/asset-detail";
-import { sampleAssets } from "@/lib/demo-data";
+import { getStoreAsset, getStoreAssets } from "@/lib/store-data";
 
-export function generateStaticParams() {
-  return sampleAssets.map((asset) => ({ assetId: asset.id }));
-}
 export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ assetId: string }>;
-}): Promise<Metadata> {
+}: PageProps<"/assets/[assetId]">): Promise<Metadata> {
   const { assetId } = await params;
-  const asset = sampleAssets.find((item) => item.id === assetId);
+  const asset = await getStoreAsset(assetId);
   return {
-    title: asset?.name ?? "Asset not found",
-    description: asset?.description,
+    title: asset?.title ?? "Asset not found",
+    description: asset?.description.slice(0, 160),
   };
 }
-export default async function AssetPage({
+
+export default function AssetPage({ params }: PageProps<"/assets/[assetId]">) {
+  return (
+    <Suspense
+      fallback={
+        <div className="container section">
+          <p>Loading asset…</p>
+        </div>
+      }
+    >
+      <AssetContent params={params} />
+    </Suspense>
+  );
+}
+
+async function AssetContent({
   params,
 }: {
-  params: Promise<{ assetId: string }>;
+  params: PageProps<"/assets/[assetId]">["params"];
 }) {
   const { assetId } = await params;
-  const asset = sampleAssets.find((item) => item.id === assetId);
+  const [asset, all] = await Promise.all([
+    getStoreAsset(assetId),
+    getStoreAssets(),
+  ]);
   if (!asset) notFound();
-  return <AssetDetail key={asset.id} asset={asset} />;
+  const related = all
+    .filter((a) => a.id !== asset.id)
+    .sort(
+      (a, b) =>
+        Number(b.category === asset.category) -
+        Number(a.category === asset.category),
+    )
+    .slice(0, 5);
+  return <AssetDetail key={asset.id} asset={asset} related={related} />;
 }

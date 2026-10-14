@@ -5,6 +5,7 @@ import { flows, infoContent, type Flow, type FlowKey, type InfoKey } from "@/lib
 import AccessForm from "@/components/access/AccessForm";
 import FlowForm from "@/components/flow/FlowForm";
 import Newsletter from "@/components/newsletter/Newsletter";
+import { SubmissionLinkForm } from "@/components/submission-link-form";
 
 export type ModalRequest =
   | { kind: "form"; key: FlowKey }
@@ -88,7 +89,7 @@ export default function PreviewDialog({
         ×
       </button>
       <p className="eyebrow">
-        {applicationPath ? "Application" : config ? "Form" : isNewsletter ? "Newsletter" : "Preview information"}
+        {applicationPath ? "Application" : request.kind === "form" && request.key === "creator" ? "Share your work" : config ? "Form" : isNewsletter ? "Newsletter" : "Preview information"}
         
       </p>
       <h2 id="dialog-title">{config?.title ?? info?.title}</h2>
@@ -101,6 +102,10 @@ export default function PreviewDialog({
             {applicationPath && <AccessForm initialPath={applicationPath} />}
       {request.kind === "form" && !applicationPath && request.key !== "creator" && (
         <FlowForm flowKey={request.key} />
+      )}
+      {/* Sharing an asset starts with an email link to /assets/new. */}
+      {request.kind === "form" && request.key === "creator" && (
+        <SubmissionLinkForm />
       )}
       {isNewsletter && <Newsletter />}
       {!config && !isNewsletter && (

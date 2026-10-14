@@ -14,6 +14,21 @@ npm run start -- --hostname 127.0.0.1 --port 3000
 
 Open `http://127.0.0.1:3000`. For development, use `npm run dev`.
 
+## Supabase
+
+The catalogue is moving to Supabase (tables: `categories`, `creators`, `assets`).
+
+1. Copy `.env.example` to `.env.local` and fill in the project URL, publishable key and project ID from the Supabase dashboard.
+2. Generate TypeScript types from the schema (first time only: `npx supabase login`):
+
+   ```sh
+   npm run db:types
+   ```
+
+   Re-run it whenever the tables change.
+
+Use `createClient` from `lib/supabase/server.ts` in Server Components, Server Actions and Route Handlers, and from `lib/supabase/client.ts` in Client Components.
+
 ## Verification
 
 ```sh

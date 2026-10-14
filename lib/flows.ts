@@ -127,31 +127,10 @@ export const flows = {
   },
   creator: {
     title: "Share or sell your work",
-    intro: "Introduce a model, environment or tool for a future catalogue.",
-    fields: [
-      ...person,
-      { name: "title", label: "Asset name", required: true },
-      {
-        name: "category",
-        label: "Category",
-        type: "select",
-        required: true,
-        options: ["Models", "Environments", "Tools"],
-      },
-      {
-        name: "summary",
-        label: "Describe the asset",
-        type: "textarea",
-        required: true,
-      },
-      { name: "link", label: "Portfolio or file link (optional)", type: "url" },
-      {
-        name: "license",
-        label: "Ownership and proposed license",
-        type: "textarea",
-        required: true,
-      },
-    ],
+    intro:
+      "Enter your email and we'll send you a link to the submission page. Your asset goes live as soon as you publish it.",
+    // The real email step is components/submission-link-form.tsx.
+    fields: [],
   },
   question: {
     title: "Ask a question",
@@ -210,24 +189,12 @@ export const infoContent = {
     copy: "Pick the topics you care about and we will only send you those: engine news, studio stories, Bootcamp intakes and more.",
   },
   acquire: {
-    title: "Get asset — preview",
-    copy: "This listing uses concept imagery and placeholder pricing, not a downloadable product. A real acquisition would require verified creator rights, a license, engine compatibility and a delivery service, plus payments for paid assets. Nothing is purchased, downloaded or added to an engine project here.",
-  },
-  assetCart: {
-    title: "Cart — placeholder",
-    copy: "A cart would hold assets before checkout. The preview catalogue has fictional creators and placeholder prices, with no payment service, so no item is added and no transaction takes place.",
-  },
-  assetSave: {
-    title: "Saved assets — placeholder",
-    copy: "Saved collections would help you return to assets you like. Account and collection features will be added later. Nothing is saved by this placeholder.",
-  },
-  assetReviews: {
-    title: "Asset reviews",
-    copy: "The catalogue contains preview assets, with no real ratings or reviews. Verified reviews and their moderation are future features.",
+    title: "Get asset",
+    copy: "Purchasing and downloads aren't available yet. Checkout and delivery are coming soon.",
   },
   assetSupport: {
     title: "Asset support",
-    copy: "A real listing would provide a verified creator support destination. No creator contact or support service is available for these sample assets.",
+    copy: "Creator support contacts aren't shown yet. For questions about a listing, contact the Gemu team.",
   },
 };
 export type InfoKey = keyof typeof infoContent;

@@ -1490,27 +1490,13 @@ select:user-invalid {
 }
 .product-acquisition {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 48px 48px;
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
   margin-top: 24px;
 }
 .product-acquisition > .button {
   padding-inline: 12px;
   gap: 12px;
-}
-.product-icon-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 48px;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius);
-  background: none;
-  font-size: 24px;
-  line-height: 1;
-}
-.product-icon-button:hover {
-  background: var(--sand);
 }
 .product-transaction-note {
   font-size: 11px;
@@ -1593,7 +1579,7 @@ body:has(.asset-lightbox[open]) {
     font-size: 28px;
   }
   .product-acquisition {
-    grid-template-columns: minmax(0, 1fr) 44px 44px;
+    grid-template-columns: minmax(0, 1fr);
     gap: 8px;
   }
   .product-acquisition > .button {
@@ -1653,7 +1639,7 @@ body:has(.asset-lightbox[open]) {
     font-size: 32px;
   }
   .product-acquisition {
-    grid-template-columns: minmax(0, 1fr) 48px 48px;
+    grid-template-columns: minmax(0, 1fr);
   }
   .product-acquisition > .button {
     font-size: 13px;
@@ -1777,7 +1763,7 @@ body:has(.asset-lightbox[open]) {
     grid-column: auto;
   }
   .product-acquisition {
-    grid-template-columns: minmax(0, 1fr) 44px 44px;
+    grid-template-columns: minmax(0, 1fr);
   }
   .product-acquisition > .button {
     font-size: 12px;
@@ -2159,33 +2145,467 @@ html {
   }
 }
 
-/* Tailwind theme tokens for the asset submission form (app/_components/asset-submission-form.tsx).
-   Same values as the :root variables above, exposed as utilities like bg-ink and text-muted. */
-@theme {
-  --color-ink: #161618;
-  --color-raised: #242426;
-  --color-paper: #efe9e7;
-  --color-sand: #e9e4de;
-  --color-charcoal: #333333;
-  --color-fog: #b7b2af;
-  --color-muted: #69625e;
-  --color-line: #8d827c;
-  --color-line-dark: #6d6769;
-  --color-field: #faf7f5;
-  --color-error: #943c36;
-  --color-success: #315d48;
-
-  --radius-gemu: 2px;
+/* Asset submission form (components/asset-submission-form.tsx) */
+.preview-dialog {
+  overflow-y: auto;
+}
+.asset-form-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--error);
+}
+.asset-form-error svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.asset-form-summary {
+  padding: 16px;
+  border: 1px solid var(--error);
+  background: #faf7f5;
+  font-size: 13px;
+}
+.asset-form-summary strong {
+  display: block;
+  color: var(--error);
+}
+.asset-form-summary ul {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 4px;
+}
+.asset-form-summary a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.asset-form-drop-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: var(--radius);
+}
+.asset-form-drop-prompt {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.asset-form-drop-detail {
+  display: block;
+  margin-top: 2px;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+}
+.asset-form-file {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 12px 16px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  background: #faf7f5;
+}
+.asset-form-file-info {
+  flex: 1 1 160px;
+  min-width: 0;
+}
+.asset-form-file-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+  color: var(--ink);
+}
+.asset-form-file-meta {
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 0 !important;
+}
+.asset-form-file-actions {
+  display: flex;
+  gap: 16px;
+  margin-left: auto;
+}
+.asset-form-done {
+  margin-top: 32px;
+}
+.asset-form-done:focus {
+  outline: none;
+}
+.asset-form-done .actions {
+  align-items: center;
 }
 
-@theme inline {
-  --font-sans: var(--font-inter), Arial, sans-serif;
-  --font-mono: ui-monospace, Consolas, monospace;
+/* Email link step (components/submission-link-form.tsx) */
+.link-form {
+  margin-top: 32px;
+}
+.link-form-row {
+  display: flex;
+  gap: 12px;
+}
+.link-form-row input {
+  flex: 1;
+  min-width: 0;
+}
+.link-form-row .button {
+  flex-shrink: 0;
+}
+.link-form .small,
+.link-form .asset-form-error {
+  margin-top: 12px;
+}
+.link-form-sent {
+  margin-top: 32px;
+  padding: 24px;
+  border: 1px solid var(--border-light);
+  background: #faf7f5;
+}
+.link-form-sent p + p {
+  margin-top: 12px;
+}
+@media (max-width: 500px) {
+  .link-form-row {
+    flex-direction: column;
+  }
 }
 
-.gemu-grid {
-  background-image:
-    linear-gradient(#ffffff08 1px, transparent 1px),
-    linear-gradient(90deg, #ffffff08 1px, transparent 1px);
-  background-size: 16px 16px;
+/* Submission page (/assets/new) */
+.submit-page {
+  max-width: 720px;
+}
+.asset-form-done h2 {
+  font-size: 32px;
+}
+
+/* Store media and ratings */
+.market-card-image > video,
+.gallery-stage > video,
+.gallery-thumbnails video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3/2;
+  object-fit: cover;
+  background: var(--ink);
+}
+.gallery-stage > video {
+  aspect-ratio: 16/10;
+  object-fit: contain;
+}
+.gallery-thumbnails video {
+  aspect-ratio: 16/10;
+}
+.market-review [aria-hidden="true"],
+.product-rating-summary [aria-hidden="true"] {
+  color: var(--ink);
+  letter-spacing: 1px;
+}
+.product-description {
+  white-space: pre-line;
+}
+.product-rating-summary {
+  font-size: 15px;
+}
+.star-rating {
+  margin-top: 24px;
+}
+.star-rating fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.star-rating legend {
+  padding: 0;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.star-rating-buttons {
+  display: flex;
+  gap: 4px;
+}
+.star-rating-buttons button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  background: #faf7f5;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--muted);
+}
+.star-rating-buttons button.is-on {
+  color: var(--ink);
+  background: var(--sand);
+}
+.star-rating fieldset:disabled button {
+  cursor: default;
+}
+.star-rating .small {
+  margin-top: 12px;
+}
+
+/* Listing editor (/assets/new): the asset page with editable areas */
+.listing-editor-intro {
+  padding-block: 16px;
+  background: var(--sand);
+  border-bottom: 1px solid var(--border-light);
+  font-size: 13px;
+}
+.listing-editor-intro .eyebrow {
+  margin-bottom: 4px;
+}
+.listing-editor-fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.listing-editor-fieldset:disabled {
+  opacity: 0.7;
+}
+.listing-editor-summary {
+  margin-bottom: 24px;
+}
+.listing-editable {
+  width: 100%;
+  min-height: 0;
+  padding: 8px 10px;
+  border: 1px dashed var(--border-light);
+  border-radius: var(--radius);
+  background: #faf7f5;
+  color: inherit;
+  font: inherit;
+  transition: border-color 0.15s;
+}
+.listing-editable:hover {
+  border-color: var(--charcoal);
+}
+.listing-editable:focus-visible {
+  border-style: solid;
+  outline: 3px solid var(--focus-light);
+  outline-offset: 2px;
+}
+.listing-editable[aria-invalid="true"] {
+  border-style: solid;
+  border-color: var(--error);
+}
+.listing-editable::placeholder {
+  color: var(--muted);
+  opacity: 0.8;
+}
+.listing-editable-title {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1.15;
+  padding: 4px 8px;
+}
+.listing-editor-count {
+  margin-top: 4px;
+  text-align: right;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+.listing-editable-category {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  font-size: 11px;
+}
+.listing-editable-category select {
+  width: auto;
+  padding: 4px 28px 4px 8px;
+  font-size: 12px;
+}
+.listing-editor-static {
+  font-size: 11px;
+  color: var(--muted);
+}
+.listing-editable-price {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.listing-editable-price input {
+  width: 160px;
+  padding: 2px 8px;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.listing-editable-description {
+  font-size: 14px;
+  line-height: 1.8;
+  padding: 12px;
+  resize: vertical;
+}
+.listing-editor-files {
+  margin-top: 24px;
+}
+.listing-editor-label {
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.listing-editor-stage {
+  min-height: 0;
+}
+.listing-editor-remove {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: var(--radius);
+  background: #161618d9;
+  color: var(--paper);
+  font-size: 12px;
+}
+.listing-editor-remove:hover {
+  background: var(--ink);
+}
+.listing-editor-remove:focus-visible {
+  outline-color: var(--paper);
+  outline-offset: 2px;
+}
+
+.listing-drop label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 0;
+  padding: 24px 16px;
+  border: 1px dashed var(--border-light);
+  border-radius: var(--radius);
+  background: #faf7f5;
+  color: var(--charcoal);
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+.listing-drop label:hover,
+.listing-drop.is-dragging label {
+  background: var(--sand);
+  border-color: var(--charcoal);
+}
+.listing-drop.is-invalid label {
+  border-color: var(--error);
+}
+.listing-drop input:focus-visible + label {
+  outline: 3px solid var(--focus-light);
+  outline-offset: 4px;
+}
+.listing-drop-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.listing-drop.is-stage label {
+  aspect-ratio: 16/10;
+  border: 0;
+  background: var(--sand);
+  outline: 1px dashed var(--border-light);
+  outline-offset: -16px;
+}
+.listing-drop.is-stage label:hover,
+.listing-drop.is-stage.is-dragging label {
+  outline-color: var(--charcoal);
+}
+.listing-drop.is-stage.is-invalid label {
+  outline-color: var(--error);
+}
+/* "Add photo or video" tile: same box as a gallery thumbnail button */
+.listing-drop.is-tile {
+  display: flex;
+  width: 120px;
+}
+.listing-drop.is-tile label {
+  flex: 1;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0;
+  padding: 0;
+  text-align: left;
+  background: var(--sand);
+}
+.gallery-thumbnails .listing-drop-tile-art {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16/10;
+  padding: 0;
+  color: var(--charcoal);
+}
+.gallery-thumbnails .listing-drop-tile-caption {
+  color: var(--charcoal);
+}
+
+.listing-editor-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  background: var(--paper);
+  border-top: 1px solid var(--border-light);
+  box-shadow: 0 -8px 24px #0000000f;
+}
+.listing-editor-bar-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding-block: 12px;
+}
+.listing-editor-timer {
+  margin-right: auto;
+  font-size: 13px;
+  font-weight: 600;
+}
+.listing-editor-timer.is-expired {
+  color: var(--error);
+}
+.listing-editor-bar .asset-form-error {
+  margin: 0;
+}
+@media (max-width: 500px) {
+  .listing-editable-title {
+    font-size: 26px;
+  }
+  .listing-editor-bar .button {
+    width: 100%;
+  }
+}
+.listing-editable-creator {
+  flex: 1 1 140px;
+  min-width: 0;
+  max-width: 240px;
+}
+.listing-editable-creator input {
+  padding: 4px 8px;
+  font-size: 13px;
 }

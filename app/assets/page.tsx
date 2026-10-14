@@ -1,22 +1,30 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Assets } from "@/components/assets";
+import { getCategoryTitles, getStoreAssets } from "@/lib/store-data";
+
 export const metadata: Metadata = {
   title: "Voxel assets",
   description:
-    "Browse sample voxel models, environments and tools. Explore the Gemu creator catalogue concept.",
+    "Browse voxel models, environments and tools shared by Gemu creators.",
 };
-export default function AssetsPage() {
+
+export default async function AssetsPage() {
+  const [assets, categories] = await Promise.all([
+    getStoreAssets(),
+    getCategoryTitles(),
+  ]);
   return (
+    // Assets reads the ?category= search param on the client.
     <Suspense
       fallback={
         <div className="container section">
           <h1>Voxel assets</h1>
-          <p>Loading sample catalogue…</p>
+          <p>Loading the catalogue…</p>
         </div>
       }
     >
-      <Assets />
+      <Assets assets={assets} categories={categories} />
     </Suspense>
   );
 }
