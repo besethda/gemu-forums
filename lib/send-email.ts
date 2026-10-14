@@ -16,7 +16,17 @@ export async function sendEmail({ toEmail, subject, message }: Email) {
     EMAILJS_PRIVATE_KEY: privateKey,
   } = process.env;
   if (!serviceId || !templateId || !publicKey || !privateKey) {
-    throw new Error("EmailJS isn't configured. See .env.example.");
+    const missing = Object.entries({
+      NEXT_PUBLIC_EMAILJS_SERVICE_ID: serviceId,
+      NEXT_PUBLIC_EMAILJS_TEMPLATE_ID: templateId,
+      NEXT_PUBLIC_EMAILJS_PUBLIC_KEY: publicKey,
+      EMAILJS_PRIVATE_KEY: privateKey,
+    })
+      .filter(([, value]) => !value)
+      .map(([name]) => name);
+    throw new Error(
+      `EmailJS isn't configured: missing ${missing.join(", ")}. See .env.example.`,
+    );
   }
 
   const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
